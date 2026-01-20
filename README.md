@@ -20,7 +20,7 @@ npm start
 
 ## Admin Access
 
-- Password: `producertour`
+- Password 
 - Access via the "Admin" link on homepage
 
 ## Tech Stack
