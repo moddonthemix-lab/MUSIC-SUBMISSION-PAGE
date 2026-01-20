@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Upload, Music, Star, Radio, ExternalLink } from 'lucide-react';
+import { Upload, Music, Star, ExternalLink } from 'lucide-react';
 import './App.css';
 
 export default function MusicSubmissionPlatform() {
