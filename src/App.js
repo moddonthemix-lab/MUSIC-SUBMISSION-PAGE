@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Upload, Music, Star, ExternalLink } from 'lucide-react';
 import './App.css';
+import { supabase } from './supabaseClient';
 
 export default function MusicSubmissionPlatform() {
   const [view, setView] = useState('home');
@@ -32,18 +33,49 @@ export default function MusicSubmissionPlatform() {
 
   const loadSubmissions = async () => {
     try {
-      // Replace with your backend API
-      const stored = localStorage.getItem('submissions');
-      if (stored) {
-        setSubmissions(JSON.parse(stored));
+      // Fetch submissions from Supabase
+      const { data, error } = await supabase
+        .from('submissions')
+        .select('*')
+        .order('submitted_at', { ascending: false });
+
+      if (error) throw error;
+
+      if (data) {
+        // Convert snake_case from database to camelCase for React
+        const submissions = data.map(sub => ({
+          id: sub.id,
+          email: sub.email,
+          artistName: sub.artist_name,
+          trackTitle: sub.track_title,
+          socialHandle: sub.social_handle,
+          priority: sub.priority,
+          mixNotes: sub.mix_notes,
+          mixOption: sub.mix_option,
+          fileLink: sub.file_link,
+          submissionType: sub.submission_type,
+          fileName: sub.file_name,
+          fileData: sub.file_data,
+          fileType: sub.file_type,
+          submittedAt: sub.submitted_at,
+          status: sub.status,
+          paid: sub.paid
+        }));
+        setSubmissions(submissions);
       }
-      
-      const queueData = localStorage.getItem('queue_order');
-      if (queueData) {
-        setQueueOrder(JSON.parse(queueData));
+
+      // Load queue order
+      const { data: queueData } = await supabase
+        .from('queue_order')
+        .select('submission_ids')
+        .limit(1)
+        .single();
+
+      if (queueData && queueData.submission_ids) {
+        setQueueOrder(queueData.submission_ids);
       }
     } catch (error) {
-      console.log('No submissions yet');
+      console.error('Error loading submissions:', error);
     }
   };
 
@@ -112,23 +144,33 @@ export default function MusicSubmissionPlatform() {
       window.open(cashAppUrl, '_blank');
     }
 
-    const submission = {
+    // Prepare submission data for Supabase (convert camelCase to snake_case)
+    const submissionData = {
       id: Date.now().toString(),
-      ...formData,
-      submissionType,
-      fileName: uploadedFile ? uploadedFile.name : 'Link provided',
-      fileData: uploadedFile ? uploadedFile.data : null,
-      fileType: uploadedFile ? uploadedFile.type : null,
-      submittedAt: new Date().toISOString(),
+      email: formData.email,
+      artist_name: formData.artistName,
+      track_title: formData.trackTitle,
+      social_handle: formData.socialHandle || null,
+      priority: formData.priority,
+      mix_notes: formData.mixNotes || null,
+      mix_option: formData.mixOption || null,
+      file_link: formData.fileLink || null,
+      submission_type: submissionType,
+      file_name: uploadedFile ? uploadedFile.name : 'Link provided',
+      file_data: uploadedFile ? uploadedFile.data : null,
+      file_type: uploadedFile ? uploadedFile.type : null,
+      submitted_at: new Date().toISOString(),
       status: 'pending',
       paid: requiresPayment
     };
 
     try {
-      const stored = localStorage.getItem('submissions');
-      const existing = stored ? JSON.parse(stored) : [];
-      existing.push(submission);
-      localStorage.setItem('submissions', JSON.stringify(existing));
+      // Insert submission into Supabase
+      const { error } = await supabase
+        .from('submissions')
+        .insert([submissionData]);
+
+      if (error) throw error;
 
       await loadSubmissions();
       setFormData({ email: '', artistName: '', trackTitle: '', socialHandle: '', priority: 'free', mixNotes: '', mixOption: 'standard', fileLink: '' });
@@ -158,13 +200,13 @@ export default function MusicSubmissionPlatform() {
 
   const updateSubmissionStatus = async (id, newStatus) => {
     try {
-      const stored = localStorage.getItem('submissions');
-      if (stored) {
-        const subs = JSON.parse(stored);
-        const updated = subs.map(s => s.id === id ? {...s, status: newStatus} : s);
-        localStorage.setItem('submissions', JSON.stringify(updated));
-        await loadSubmissions();
-      }
+      const { error } = await supabase
+        .from('submissions')
+        .update({ status: newStatus })
+        .eq('id', id);
+
+      if (error) throw error;
+      await loadSubmissions();
     } catch (error) {
       console.error('Error updating status:', error);
     }
@@ -173,13 +215,13 @@ export default function MusicSubmissionPlatform() {
   const deleteSubmission = async (id) => {
     if (window.confirm('Are you sure you want to delete this submission?')) {
       try {
-        const stored = localStorage.getItem('submissions');
-        if (stored) {
-          const subs = JSON.parse(stored);
-          const filtered = subs.filter(s => s.id !== id);
-          localStorage.setItem('submissions', JSON.stringify(filtered));
-          await loadSubmissions();
-        }
+        const { error } = await supabase
+          .from('submissions')
+          .delete()
+          .eq('id', id);
+
+        if (error) throw error;
+        await loadSubmissions();
       } catch (error) {
         console.error('Error deleting submission:', error);
       }
@@ -215,7 +257,12 @@ export default function MusicSubmissionPlatform() {
 
   const saveQueueOrder = async (newOrder) => {
     try {
-      localStorage.setItem('queue_order', JSON.stringify(newOrder));
+      const { error } = await supabase
+        .from('queue_order')
+        .update({ submission_ids: newOrder })
+        .eq('id', 1); // Assuming we have one queue_order row with id 1
+
+      if (error) throw error;
       setQueueOrder(newOrder);
     } catch (error) {
       console.error('Error saving queue order:', error);
