@@ -7,8 +7,6 @@ export default function MusicSubmissionPlatform() {
   const [submissions, setSubmissions] = useState([]);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [submissionType, setSubmissionType] = useState('review');
-  const [showPayment, setShowPayment] = useState(false);
-  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
   const [filterType, setFilterType] = useState('all');
@@ -23,8 +21,7 @@ export default function MusicSubmissionPlatform() {
     socialHandle: '',
     priority: 'free',
     mixNotes: '',
-    mixOption: 'standard',
-    paymentConfirmation: ''
+    mixOption: 'standard'
   });
   const fileInputRef = useRef(null);
   const isLive = true;
@@ -72,10 +69,19 @@ export default function MusicSubmissionPlatform() {
     }
 
     const requiresPayment = submissionType === 'review' ? formData.priority !== 'free' : true;
-    
-    if (requiresPayment && !paymentConfirmed) {
-      setShowPayment(true);
-      return;
+
+    // Open Cash App payment link if payment is required
+    if (requiresPayment) {
+      let amount = 0;
+      if (submissionType === 'review') {
+        if (formData.priority === 'priority') amount = 5;
+        else if (formData.priority === 'premium') amount = 10;
+        else if (formData.priority === 'king') amount = 25;
+      } else {
+        amount = formData.mixOption === 'standard' ? 60 : 100;
+      }
+      const cashAppUrl = `https://cash.app/$moddonthemix/${amount}`;
+      window.open(cashAppUrl, '_blank');
     }
 
     const submission = {
@@ -95,13 +101,16 @@ export default function MusicSubmissionPlatform() {
       const existing = stored ? JSON.parse(stored) : [];
       existing.push(submission);
       localStorage.setItem('submissions', JSON.stringify(existing));
-      
+
       await loadSubmissions();
-      setFormData({ email: '', artistName: '', trackTitle: '', socialHandle: '', priority: 'free', mixNotes: '', mixOption: 'standard', paymentConfirmation: '' });
+      setFormData({ email: '', artistName: '', trackTitle: '', socialHandle: '', priority: 'free', mixNotes: '', mixOption: 'standard' });
       setUploadedFile(null);
-      setShowPayment(false);
-      setPaymentConfirmed(false);
-      alert('Submission successful!');
+
+      if (requiresPayment) {
+        alert('Submission successful! Cash App has opened - please complete your payment.');
+      } else {
+        alert('Free submission successful!');
+      }
       setView('home');
     } catch (error) {
       console.error('Error submitting:', error);
@@ -440,12 +449,7 @@ export default function MusicSubmissionPlatform() {
                           </td>
                           <td className="px-4 py-3">
                             {sub.paid ? (
-                              <div>
-                                <span className="text-green-400 text-xs">✓ Paid</span>
-                                {sub.paymentConfirmation && (
-                                  <p className="text-xs text-gray-400">#{sub.paymentConfirmation}</p>
-                                )}
-                              </div>
+                              <span className="text-green-400 text-xs font-semibold">✓ Paid</span>
                             ) : (
                               <span className="text-gray-400 text-xs">Free</span>
                             )}
@@ -770,59 +774,24 @@ export default function MusicSubmissionPlatform() {
                 </p>
               </div>
 
-              {/* Payment Flow */}
-              {showPayment ? (
-                <div className="space-y-4">
-                  <div className="bg-green-900/30 border border-green-700/50 rounded-lg p-4">
-                    <h3 className="font-bold mb-2">Payment Required</h3>
-                    <p className="text-sm text-gray-300 mb-4">
-                      Click below to pay via Cash App. After payment, enter your confirmation number.
-                    </p>
-                    <button
-                      onClick={handlePayment}
-                      className="w-full py-3 bg-green-600 hover:bg-green-700 rounded-lg font-bold mb-3"
-                    >
-                      Pay ${submissionType === 'review' 
-                        ? (formData.priority === 'priority' ? '5' : formData.priority === 'premium' ? '10' : '25')
-                        : (formData.mixOption === 'standard' ? '60' : '100')
-                      } via Cash App
-                    </button>
-                    <input
-                      type="text"
-                      value={formData.paymentConfirmation}
-                      onChange={(e) => setFormData({...formData, paymentConfirmation: e.target.value})}
-                      placeholder="Enter payment confirmation/reference"
-                      className="w-full px-4 py-2 bg-gray-700 rounded-lg border border-gray-600 focus:border-green-500 outline-none mb-3"
-                    />
-                    <button
-                      onClick={() => {
-                        if (formData.paymentConfirmation) {
-                          setPaymentConfirmed(true);
-                          setShowPayment(false);
-                          handleSubmit();
-                        } else {
-                          alert('Please enter your payment confirmation');
-                        }
-                      }}
-                      className="w-full py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-bold"
-                    >
-                      Confirm Payment & Submit
-                    </button>
-                    <button
-                      onClick={() => setShowPayment(false)}
-                      className="w-full py-2 text-gray-400 hover:text-white mt-2"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <button 
-                  onClick={handleSubmit}
-                  className="w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg font-bold"
-                >
-                  {submissionType === 'mix' ? 'Submit for Mix & Master' : (formData.priority === 'free' ? 'Submit Free' : 'Continue to Payment')}
-                </button>
+              {/* Submit Button */}
+              <button
+                onClick={handleSubmit}
+                className="w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg font-bold"
+              >
+                {submissionType === 'mix'
+                  ? `Submit & Pay $${formData.mixOption === 'standard' ? '60' : '100'}`
+                  : (formData.priority === 'free'
+                    ? 'Submit Free'
+                    : `Submit & Pay $${formData.priority === 'priority' ? '5' : formData.priority === 'premium' ? '10' : '25'}`
+                  )
+                }
+              </button>
+
+              {(submissionType === 'mix' || formData.priority !== 'free') && (
+                <p className="text-xs text-gray-400 text-center mt-2">
+                  Cash App will open in a new window for payment
+                </p>
               )}
             </div>
           </div>
