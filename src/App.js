@@ -592,7 +592,7 @@ export default function MusicSubmissionPlatform() {
                 type="file"
                 ref={fileInputRef}
                 onChange={handleFileSelect}
-                accept={submissionType === 'mix' ? '.zip,application/zip,application/x-zip-compressed' : 'audio/*'}
+                accept={submissionType === 'mix' ? '.zip,application/zip,application/x-zip-compressed' : 'audio/mpeg,audio/mp3,audio/wav,audio/*,.mp3,.wav,.m4a'}
                 className="hidden"
                 id="file-upload-input"
               />
