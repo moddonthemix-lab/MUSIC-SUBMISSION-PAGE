@@ -25,7 +25,6 @@ export default function MusicSubmissionPlatform() {
     fileLink: ''
   });
   const fileInputRef = useRef(null);
-  const isLive = true;
 
   useEffect(() => {
     loadSubmissions();
@@ -554,12 +553,8 @@ export default function MusicSubmissionPlatform() {
           </button>
 
           <div className="text-center mb-8">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-pink-500 to-purple-500 mx-auto mb-4 flex items-center justify-center">
-              <Music className="w-10 h-10" />
-            </div>
-            {isLive && <span className="inline-block px-3 py-1 bg-red-500 rounded-full text-sm font-bold mb-2">🔴 LIVE</span>}
             <h1 className="text-3xl font-bold mb-2">Submit to @Moddonthemix</h1>
-            <p className="text-gray-300">Drag & drop your track or load from library</p>
+            <p className="text-gray-300">Choose your submission type below</p>
           </div>
 
           {/* Tab Selection */}
