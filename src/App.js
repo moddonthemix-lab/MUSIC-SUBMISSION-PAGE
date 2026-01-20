@@ -19,6 +19,15 @@ export default function MusicSubmissionPlatform() {
   const [affiliateCode, setAffiliateCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(null);
   const [isValidatingCode, setIsValidatingCode] = useState(false);
+  const [affiliateCodes, setAffiliateCodes] = useState([]);
+  const [showAffiliateManager, setShowAffiliateManager] = useState(false);
+  const [editingCode, setEditingCode] = useState(null);
+  const [newCodeForm, setNewCodeForm] = useState({
+    code: '',
+    affiliate_name: '',
+    affiliate_email: '',
+    discount_percentage: 15
+  });
   const [formData, setFormData] = useState({
     email: '',
     artistName: '',
@@ -63,7 +72,11 @@ export default function MusicSubmissionPlatform() {
           fileType: sub.file_type,
           submittedAt: sub.submitted_at,
           status: sub.status,
-          paid: sub.paid
+          paid: sub.paid,
+          affiliateCode: sub.affiliate_code,
+          originalPrice: sub.original_price,
+          discountAmount: sub.discount_amount,
+          finalPrice: sub.final_price
         }));
         setSubmissions(submissions);
       }
@@ -295,6 +308,86 @@ export default function MusicSubmissionPlatform() {
     }
   };
 
+  const loadAffiliateCodes = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('affiliate_codes')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setAffiliateCodes(data || []);
+    } catch (error) {
+      console.error('Error loading affiliate codes:', error);
+    }
+  };
+
+  const createAffiliateCode = async () => {
+    if (!newCodeForm.code || !newCodeForm.affiliate_name) {
+      alert('Please fill in code and affiliate name');
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('affiliate_codes')
+        .insert([{
+          code: newCodeForm.code.toUpperCase(),
+          affiliate_name: newCodeForm.affiliate_name,
+          affiliate_email: newCodeForm.affiliate_email || null,
+          discount_percentage: newCodeForm.discount_percentage,
+          is_active: true
+        }]);
+
+      if (error) throw error;
+
+      alert('Affiliate code created successfully!');
+      setNewCodeForm({ code: '', affiliate_name: '', affiliate_email: '', discount_percentage: 15 });
+      await loadAffiliateCodes();
+    } catch (error) {
+      console.error('Error creating code:', error);
+      alert('Error creating code: ' + error.message);
+    }
+  };
+
+  const updateAffiliateCode = async (id, updates) => {
+    try {
+      const { error } = await supabase
+        .from('affiliate_codes')
+        .update(updates)
+        .eq('id', id);
+
+      if (error) throw error;
+      await loadAffiliateCodes();
+    } catch (error) {
+      console.error('Error updating code:', error);
+    }
+  };
+
+  const deleteAffiliateCode = async (id) => {
+    if (window.confirm('Are you sure you want to delete this affiliate code?')) {
+      try {
+        const { error } = await supabase
+          .from('affiliate_codes')
+          .delete()
+          .eq('id', id);
+
+        if (error) throw error;
+        await loadAffiliateCodes();
+      } catch (error) {
+        console.error('Error deleting code:', error);
+      }
+    }
+  };
+
+  const getAffiliateStats = (code) => {
+    const codeSubmissions = submissions.filter(s => s.affiliateCode === code);
+    return {
+      count: codeSubmissions.length,
+      revenue: codeSubmissions.reduce((sum, s) => sum + (s.finalPrice || 0), 0)
+    };
+  };
+
   const getQueuedSubmissions = () => {
     const pending = submissions.filter(s => s.submissionType === 'review' && s.status === 'pending');
     
@@ -438,15 +531,26 @@ export default function MusicSubmissionPlatform() {
               <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
               <p className="text-gray-400">Manage all submissions and payments</p>
             </div>
-            <button
-              onClick={() => {
-                setView('home');
-                setIsAdmin(false);
-              }}
-              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg"
-            >
-              Logout
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowAffiliateManager(!showAffiliateManager);
+                  if (!showAffiliateManager) loadAffiliateCodes();
+                }}
+                className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold"
+              >
+                {showAffiliateManager ? 'Hide' : 'Manage'} Affiliate Codes
+              </button>
+              <button
+                onClick={() => {
+                  setView('home');
+                  setIsAdmin(false);
+                }}
+                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg"
+              >
+                Logout
+              </button>
+            </div>
           </div>
 
           {/* Filters */}
@@ -486,6 +590,134 @@ export default function MusicSubmissionPlatform() {
               </div>
             </div>
           </div>
+
+          {/* Affiliate Code Manager */}
+          {showAffiliateManager && (
+            <div className="bg-gray-800/50 backdrop-blur rounded-xl p-6 mb-6 border border-gray-700">
+              <h3 className="text-2xl font-bold mb-6">Affiliate Code Manager</h3>
+
+              {/* Create New Code Form */}
+              <div className="bg-gray-900/50 rounded-lg p-6 mb-6">
+                <h4 className="text-lg font-bold mb-4">Create New Affiliate Code</h4>
+                <div className="grid md:grid-cols-4 gap-4 mb-4">
+                  <div>
+                    <label className="text-sm text-gray-400 block mb-2">Code *</label>
+                    <input
+                      type="text"
+                      value={newCodeForm.code}
+                      onChange={(e) => setNewCodeForm({...newCodeForm, code: e.target.value.toUpperCase()})}
+                      placeholder="PRODUCER15"
+                      className="w-full px-4 py-2 bg-gray-700 rounded-lg border border-gray-600 uppercase"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-400 block mb-2">Affiliate Name *</label>
+                    <input
+                      type="text"
+                      value={newCodeForm.affiliate_name}
+                      onChange={(e) => setNewCodeForm({...newCodeForm, affiliate_name: e.target.value})}
+                      placeholder="DJ Smith"
+                      className="w-full px-4 py-2 bg-gray-700 rounded-lg border border-gray-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-400 block mb-2">Email (optional)</label>
+                    <input
+                      type="email"
+                      value={newCodeForm.affiliate_email}
+                      onChange={(e) => setNewCodeForm({...newCodeForm, affiliate_email: e.target.value})}
+                      placeholder="affiliate@email.com"
+                      className="w-full px-4 py-2 bg-gray-700 rounded-lg border border-gray-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-400 block mb-2">Discount %</label>
+                    <input
+                      type="number"
+                      value={newCodeForm.discount_percentage}
+                      onChange={(e) => setNewCodeForm({...newCodeForm, discount_percentage: parseInt(e.target.value) || 0})}
+                      min="1"
+                      max="100"
+                      className="w-full px-4 py-2 bg-gray-700 rounded-lg border border-gray-600"
+                    />
+                  </div>
+                </div>
+                <button
+                  onClick={createAffiliateCode}
+                  className="px-6 py-2 bg-green-600 hover:bg-green-700 rounded-lg font-semibold"
+                >
+                  Create Code
+                </button>
+              </div>
+
+              {/* Existing Codes Table */}
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-900/50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-sm font-semibold">Code</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold">Affiliate</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold">Email</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold">Discount</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold">Uses</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold">Revenue</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold">Status</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {affiliateCodes.length === 0 ? (
+                      <tr>
+                        <td colSpan="8" className="px-4 py-8 text-center text-gray-400">
+                          No affiliate codes yet. Create one above!
+                        </td>
+                      </tr>
+                    ) : (
+                      affiliateCodes.map((code) => {
+                        const stats = getAffiliateStats(code.code);
+                        return (
+                          <tr key={code.id} className="border-t border-gray-700 hover:bg-gray-700/30">
+                            <td className="px-4 py-3">
+                              <span className="font-mono font-bold text-purple-400">{code.code}</span>
+                            </td>
+                            <td className="px-4 py-3">{code.affiliate_name}</td>
+                            <td className="px-4 py-3 text-sm text-gray-400">{code.affiliate_email || '-'}</td>
+                            <td className="px-4 py-3">
+                              <span className="px-2 py-1 bg-blue-600 rounded text-xs font-bold">
+                                {code.discount_percentage}% OFF
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 font-semibold">{stats.count}</td>
+                            <td className="px-4 py-3 font-semibold text-green-400">
+                              ${stats.revenue.toFixed(2)}
+                            </td>
+                            <td className="px-4 py-3">
+                              <button
+                                onClick={() => updateAffiliateCode(code.id, { is_active: !code.is_active })}
+                                className={`px-3 py-1 rounded text-xs font-semibold ${
+                                  code.is_active ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-600 hover:bg-gray-500'
+                                }`}
+                              >
+                                {code.is_active ? 'Active' : 'Inactive'}
+                              </button>
+                            </td>
+                            <td className="px-4 py-3">
+                              <button
+                                onClick={() => deleteAffiliateCode(code.id)}
+                                className="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-xs font-semibold"
+                              >
+                                Delete
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
 
           {/* Queue Manager - Drag and Drop */}
           <div className="bg-gray-800/50 backdrop-blur rounded-xl p-6 mb-6 border border-gray-700">
