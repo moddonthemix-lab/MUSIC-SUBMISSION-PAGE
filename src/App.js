@@ -16,6 +16,9 @@ export default function MusicSubmissionPlatform() {
   const [draggedItem, setDraggedItem] = useState(null);
   const [queueOrder, setQueueOrder] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [affiliateCode, setAffiliateCode] = useState('');
+  const [appliedDiscount, setAppliedDiscount] = useState(null);
+  const [isValidatingCode, setIsValidatingCode] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     artistName: '',
@@ -80,6 +83,61 @@ export default function MusicSubmissionPlatform() {
     }
   };
 
+  const validateAffiliateCode = async (code) => {
+    if (!code.trim()) {
+      setAppliedDiscount(null);
+      return;
+    }
+
+    setIsValidatingCode(true);
+    try {
+      const { data, error } = await supabase
+        .from('affiliate_codes')
+        .select('*')
+        .eq('code', code.toUpperCase())
+        .eq('is_active', true)
+        .single();
+
+      if (error || !data) {
+        alert('Invalid or inactive discount code');
+        setAppliedDiscount(null);
+      } else {
+        setAppliedDiscount(data);
+        alert(`${data.discount_percentage}% discount applied!`);
+      }
+    } catch (error) {
+      console.error('Error validating code:', error);
+      setAppliedDiscount(null);
+    } finally {
+      setIsValidatingCode(false);
+    }
+  };
+
+  const calculatePrice = () => {
+    let basePrice = 0;
+
+    if (submissionType === 'review') {
+      if (formData.priority === 'priority') basePrice = 5;
+      else if (formData.priority === 'premium') basePrice = 10;
+      else if (formData.priority === 'king') basePrice = 25;
+    } else {
+      basePrice = formData.mixOption === 'standard' ? 60 : 100;
+    }
+
+    if (basePrice === 0) return { original: 0, discount: 0, final: 0 };
+
+    const discountAmount = appliedDiscount
+      ? (basePrice * appliedDiscount.discount_percentage) / 100
+      : 0;
+    const finalPrice = basePrice - discountAmount;
+
+    return {
+      original: basePrice,
+      discount: discountAmount,
+      final: finalPrice
+    };
+  };
+
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -136,17 +194,12 @@ export default function MusicSubmissionPlatform() {
 
     const requiresPayment = submissionType === 'review' ? formData.priority !== 'free' : true;
 
+    // Calculate pricing with discount
+    const pricing = calculatePrice();
+
     // Open Cash App payment link if payment is required
     if (requiresPayment) {
-      let amount = 0;
-      if (submissionType === 'review') {
-        if (formData.priority === 'priority') amount = 5;
-        else if (formData.priority === 'premium') amount = 10;
-        else if (formData.priority === 'king') amount = 25;
-      } else {
-        amount = formData.mixOption === 'standard' ? 60 : 100;
-      }
-      const cashAppUrl = `https://cash.app/$moddonthemix/${amount}`;
+      const cashAppUrl = `https://cash.app/$moddonthemix/${pricing.final}`;
       window.open(cashAppUrl, '_blank');
     }
 
@@ -167,7 +220,11 @@ export default function MusicSubmissionPlatform() {
       file_type: uploadedFile ? uploadedFile.type : null,
       submitted_at: new Date().toISOString(),
       status: 'pending',
-      paid: requiresPayment
+      paid: requiresPayment,
+      affiliate_code: appliedDiscount ? appliedDiscount.code : null,
+      original_price: pricing.original,
+      discount_amount: pricing.discount,
+      final_price: pricing.final
     };
 
     try {
@@ -181,6 +238,8 @@ export default function MusicSubmissionPlatform() {
       await loadSubmissions();
       setFormData({ email: '', artistName: '', trackTitle: '', socialHandle: '', priority: 'free', mixNotes: '', mixOption: 'standard', fileLink: '' });
       setUploadedFile(null);
+      setAffiliateCode('');
+      setAppliedDiscount(null);
 
       if (requiresPayment) {
         alert('Submission successful! Cash App has opened - please complete your payment.');
@@ -867,6 +926,41 @@ export default function MusicSubmissionPlatform() {
                 )}
               </div>
 
+              {/* Discount Code Section - Only show for paid submissions */}
+              {(submissionType === 'mix' || formData.priority !== 'free') && (
+                <div className="mb-4">
+                  <label className="text-sm font-semibold block mb-2">Discount Code (optional)</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={affiliateCode}
+                      onChange={(e) => setAffiliateCode(e.target.value.toUpperCase())}
+                      placeholder="Enter discount code"
+                      className="flex-1 px-4 py-2 bg-gray-700 rounded-lg border border-gray-600 focus:border-purple-500 outline-none uppercase"
+                    />
+                    <button
+                      onClick={() => validateAffiliateCode(affiliateCode)}
+                      disabled={isValidatingCode || !affiliateCode.trim()}
+                      className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg font-semibold text-sm"
+                    >
+                      {isValidatingCode ? 'Checking...' : 'Apply'}
+                    </button>
+                  </div>
+                  {appliedDiscount && (
+                    <div className="mt-2 p-2 bg-green-900/30 border border-green-700/50 rounded-lg">
+                      <p className="text-xs text-green-200">
+                        ✓ <strong>{appliedDiscount.discount_percentage}% discount applied!</strong>
+                        {calculatePrice().original > 0 && (
+                          <>
+                            {' '}Original: ${calculatePrice().original} → New price: ${calculatePrice().final.toFixed(2)}
+                          </>
+                        )}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="bg-blue-900/30 border border-blue-700/50 rounded-lg p-3 mb-4">
                 <p className="text-xs text-blue-200">
                   Free submissions are welcome! Please follow me on TikTok to support the stream: <span className="font-bold">@Moddonthemix</span>
@@ -887,12 +981,9 @@ export default function MusicSubmissionPlatform() {
                     Submitting...
                   </>
                 ) : (
-                  submissionType === 'mix'
-                    ? `Submit & Pay $${formData.mixOption === 'standard' ? '60' : '100'}`
-                    : (formData.priority === 'free'
-                      ? 'Submit Free'
-                      : `Submit & Pay $${formData.priority === 'priority' ? '5' : formData.priority === 'premium' ? '10' : '25'}`
-                    )
+                  formData.priority === 'free' && submissionType === 'review'
+                    ? 'Submit Free'
+                    : `Submit & Pay $${calculatePrice().final.toFixed(2)}`
                 )}
               </button>
 
