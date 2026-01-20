@@ -29,6 +29,9 @@ CREATE POLICY "Allow insert affiliate codes" ON affiliate_codes
 CREATE POLICY "Allow update affiliate codes" ON affiliate_codes
   FOR UPDATE USING (true);
 
+CREATE POLICY "Allow delete affiliate codes" ON affiliate_codes
+  FOR DELETE USING (true);
+
 -- Create index for faster lookups
 CREATE INDEX IF NOT EXISTS idx_affiliate_codes_code ON affiliate_codes(code);
 CREATE INDEX IF NOT EXISTS idx_submissions_affiliate_code ON submissions(affiliate_code);
