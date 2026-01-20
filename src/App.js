@@ -241,21 +241,6 @@ export default function MusicSubmissionPlatform() {
     });
   };
 
-  const handlePayment = () => {
-    let amount = 0;
-
-    if (submissionType === 'review') {
-      if (formData.priority === 'priority') amount = 5;
-      else if (formData.priority === 'premium') amount = 10;
-      else if (formData.priority === 'king') amount = 25;
-    } else {
-      amount = formData.mixOption === 'standard' ? 60 : 100;
-    }
-
-    const cashAppUrl = `https://cash.app/$moddonthemix/${amount}`;
-    window.open(cashAppUrl, '_blank');
-  };
-
   const getPriorityInfo = (priority) => {
     const info = {
       free: { label: 'Free', price: 'Free', color: 'bg-gray-600', tier: 'Tier 4' },
