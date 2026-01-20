@@ -21,7 +21,6 @@ export default function MusicSubmissionPlatform() {
   const [isValidatingCode, setIsValidatingCode] = useState(false);
   const [affiliateCodes, setAffiliateCodes] = useState([]);
   const [showAffiliateManager, setShowAffiliateManager] = useState(false);
-  const [editingCode, setEditingCode] = useState(null);
   const [newCodeForm, setNewCodeForm] = useState({
     code: '',
     affiliate_name: '',
