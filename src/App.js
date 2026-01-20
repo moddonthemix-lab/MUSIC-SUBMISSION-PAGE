@@ -594,20 +594,21 @@ export default function MusicSubmissionPlatform() {
                 onChange={handleFileSelect}
                 accept={submissionType === 'mix' ? '.zip,application/zip,application/x-zip-compressed' : 'audio/*'}
                 className="hidden"
+                id="file-upload-input"
               />
 
-              <div
-                onClick={() => fileInputRef.current.click()}
-                className="border-2 border-dashed border-gray-600 rounded-lg p-12 text-center cursor-pointer hover:border-purple-500 transition-colors mb-4"
+              <label
+                htmlFor="file-upload-input"
+                className="block border-2 border-dashed border-gray-600 rounded-lg p-12 text-center cursor-pointer hover:border-purple-500 transition-colors mb-4"
               >
-                <Upload className="w-12 h-12 mx-auto mb-3 text-gray-400" />
-                <p className="text-gray-300">
+                <Upload className="w-12 h-12 mx-auto mb-3 text-gray-400 pointer-events-none" />
+                <p className="text-gray-300 pointer-events-none">
                   {submissionType === 'mix' ? 'Click to upload ZIP file' : 'Click to upload track'}
                 </p>
                 {uploadedFile && (
-                  <p className="mt-2 text-sm text-green-400">✓ {uploadedFile.name}</p>
+                  <p className="mt-2 text-sm text-green-400 pointer-events-none">✓ {uploadedFile.name}</p>
                 )}
-              </div>
+              </label>
 
               {submissionType === 'mix' && (
                 <div>
