@@ -257,15 +257,7 @@ export default function MusicSubmissionPlatform() {
     return info[priority];
   };
 
-  // Component renders - I'll continue in next message due to length
-  
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 text-white">
-      {/* Will continue with JSX in next parts */}
-    </div>
-  );
-}
-// ADMIN LOGIN VIEW
+  // ADMIN LOGIN VIEW
   if (view === 'adminLogin') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 text-white flex items-center justify-center p-8">
@@ -471,7 +463,7 @@ export default function MusicSubmissionPlatform() {
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex gap-2">
-                              
+                              <a
                                 href={sub.fileData}
                                 download={sub.fileName}
                                 className="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-xs font-semibold"
