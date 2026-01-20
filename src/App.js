@@ -15,6 +15,7 @@ export default function MusicSubmissionPlatform() {
   const [showQueue, setShowQueue] = useState(false);
   const [draggedItem, setDraggedItem] = useState(null);
   const [queueOrder, setQueueOrder] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     artistName: '',
@@ -107,6 +108,9 @@ export default function MusicSubmissionPlatform() {
   };
 
   const handleSubmit = async () => {
+    // Prevent double submission
+    if (isSubmitting) return;
+
     // For mix & master, require either file OR link. For reviews, require file.
     const hasFile = uploadedFile !== null;
     const hasLink = formData.fileLink.trim() !== '';
@@ -127,6 +131,8 @@ export default function MusicSubmissionPlatform() {
       alert('Please fill in all required fields');
       return;
     }
+
+    setIsSubmitting(true);
 
     const requiresPayment = submissionType === 'review' ? formData.priority !== 'free' : true;
 
@@ -185,6 +191,8 @@ export default function MusicSubmissionPlatform() {
     } catch (error) {
       console.error('Error submitting:', error);
       alert('Error submitting track. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -868,18 +876,27 @@ export default function MusicSubmissionPlatform() {
               {/* Submit Button */}
               <button
                 onClick={handleSubmit}
-                className="w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg font-bold"
+                disabled={isSubmitting}
+                className={`w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg font-bold flex items-center justify-center gap-2 ${
+                  isSubmitting ? 'opacity-75 cursor-not-allowed' : ''
+                }`}
               >
-                {submissionType === 'mix'
-                  ? `Submit & Pay $${formData.mixOption === 'standard' ? '60' : '100'}`
-                  : (formData.priority === 'free'
-                    ? 'Submit Free'
-                    : `Submit & Pay $${formData.priority === 'priority' ? '5' : formData.priority === 'premium' ? '10' : '25'}`
-                  )
-                }
+                {isSubmitting ? (
+                  <>
+                    <Music className="w-5 h-5 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  submissionType === 'mix'
+                    ? `Submit & Pay $${formData.mixOption === 'standard' ? '60' : '100'}`
+                    : (formData.priority === 'free'
+                      ? 'Submit Free'
+                      : `Submit & Pay $${formData.priority === 'priority' ? '5' : formData.priority === 'premium' ? '10' : '25'}`
+                    )
+                )}
               </button>
 
-              {(submissionType === 'mix' || formData.priority !== 'free') && (
+              {(submissionType === 'mix' || formData.priority !== 'free') && !isSubmitting && (
                 <p className="text-xs text-gray-400 text-center mt-2">
                   Cash App will open in a new window for payment
                 </p>
