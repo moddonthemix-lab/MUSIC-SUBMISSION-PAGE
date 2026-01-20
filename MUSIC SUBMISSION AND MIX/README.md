@@ -51,28 +51,42 @@ REACT_APP_CASHAPP_USERNAME=moddonthemix
   - Update submission status
   - Download submitted tracks
 
-## 🌐 Deploying to Bluehost
+## 🌐 Deployment
 
-### Quick Deployment (3 steps)
+### GitHub Pages + Custom Domain (Recommended - FREE!)
 
-1. **Update production settings:**
-   ```bash
-   # Edit .env.production with your production password
-   nano .env.production
-   ```
+Deploy to **moddonthemix.com** hosted on GitHub Pages:
 
-2. **Build your app:**
-   ```bash
-   ./deploy-to-bluehost.sh
-   ```
+```bash
+# 1. Update production password
+nano .env.production
 
-3. **Upload to Bluehost:**
-   - Log in to Bluehost cPanel
-   - Go to File Manager → public_html
-   - Upload all files from the `build/` folder
-   - Upload `.htaccess` from project root
+# 2. Deploy in one command!
+./deploy-github-pages.sh
+```
 
-📖 **Detailed instructions**: See [BLUEHOST_DEPLOYMENT.md](BLUEHOST_DEPLOYMENT.md)
+**First-time setup:**
+1. Enable GitHub Pages in repo Settings → Pages
+2. Configure DNS in Bluehost (point to GitHub)
+3. Add custom domain in GitHub Pages settings
+
+📖 **Complete DNS setup guide**: [BLUEHOST_DNS_SETUP.md](BLUEHOST_DNS_SETUP.md)
+
+**Updates are easy:**
+```bash
+npm run deploy  # Changes live in ~1 minute!
+```
+
+### Alternative: Traditional Bluehost Hosting
+
+If you have Bluehost web hosting (not just domain):
+
+```bash
+./deploy-to-bluehost.sh
+# Then upload build files via cPanel
+```
+
+📖 See [BLUEHOST_DEPLOYMENT.md](BLUEHOST_DEPLOYMENT.md) for details
 
 ## 📁 Project Structure
 
@@ -123,9 +137,15 @@ See [SETUP.md](SETUP.md) for production upgrade recommendations:
 
 ## 📚 Documentation
 
+### Deployment Guides
+- **[BLUEHOST_DNS_SETUP.md](BLUEHOST_DNS_SETUP.md)** - ⭐ DNS setup for GitHub Pages + moddonthemix.com
+- **[GITHUB_PAGES_DEPLOYMENT.md](GITHUB_PAGES_DEPLOYMENT.md)** - Complete GitHub Pages guide
+- **[deploy-github-pages.sh](deploy-github-pages.sh)** - One-command deployment script
+- **[BLUEHOST_DEPLOYMENT.md](BLUEHOST_DEPLOYMENT.md)** - Traditional Bluehost hosting (if you have web hosting)
+- **[deploy-to-bluehost.sh](deploy-to-bluehost.sh)** - Bluehost deployment helper
+
+### Setup & Configuration
 - **[SETUP.md](SETUP.md)** - Complete setup guide and production recommendations
-- **[BLUEHOST_DEPLOYMENT.md](BLUEHOST_DEPLOYMENT.md)** - Detailed Bluehost deployment guide
-- **[deploy-to-bluehost.sh](deploy-to-bluehost.sh)** - Automated deployment helper script
 
 ## 🔧 Troubleshooting
 
