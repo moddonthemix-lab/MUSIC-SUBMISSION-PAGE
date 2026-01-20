@@ -446,6 +446,9 @@ export default function MusicSubmissionPlatform() {
                           </td>
                           <td className="px-4 py-3">
                             <p className="text-sm">{sub.email}</p>
+                            {sub.socialHandle && (
+                              <p className="text-xs text-gray-400 mt-1">TikTok: {sub.socialHandle}</p>
+                            )}
                           </td>
                           <td className="px-4 py-3">
                             {sub.paid ? (
