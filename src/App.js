@@ -21,6 +21,7 @@ export default function MusicSubmissionPlatform() {
   const [isValidatingCode, setIsValidatingCode] = useState(false);
   const [affiliateCodes, setAffiliateCodes] = useState([]);
   const [showAffiliateManager, setShowAffiliateManager] = useState(false);
+  const [nowPlayingId, setNowPlayingId] = useState(null);
   const [newCodeForm, setNewCodeForm] = useState({
     code: '',
     affiliate_name: '',
@@ -41,6 +42,29 @@ export default function MusicSubmissionPlatform() {
 
   useEffect(() => {
     loadSubmissions();
+    loadNowPlaying();
+
+    // Subscribe to realtime changes on submissions table
+    const submissionsSubscription = supabase
+      .channel('submissions-channel')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'submissions' }, () => {
+        loadSubmissions();
+      })
+      .subscribe();
+
+    // Subscribe to realtime changes on settings table (now playing)
+    const settingsSubscription = supabase
+      .channel('settings-channel')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'settings' }, () => {
+        loadNowPlaying();
+      })
+      .subscribe();
+
+    // Cleanup subscriptions on unmount
+    return () => {
+      submissionsSubscription.unsubscribe();
+      settingsSubscription.unsubscribe();
+    };
   }, []);
 
   const loadSubmissions = async () => {
@@ -387,6 +411,43 @@ export default function MusicSubmissionPlatform() {
     };
   };
 
+  const loadNowPlaying = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('settings')
+        .select('now_playing_id')
+        .eq('id', 1)
+        .single();
+
+      if (error) throw error;
+      setNowPlayingId(data?.now_playing_id || null);
+    } catch (error) {
+      console.error('Error loading now playing:', error);
+    }
+  };
+
+  const setNowPlaying = async (submissionId) => {
+    try {
+      const { error } = await supabase
+        .from('settings')
+        .update({ now_playing_id: submissionId, updated_at: new Date().toISOString() })
+        .eq('id', 1);
+
+      if (error) throw error;
+      setNowPlayingId(submissionId);
+    } catch (error) {
+      console.error('Error setting now playing:', error);
+    }
+  };
+
+  const clearNowPlaying = async () => {
+    await setNowPlaying(null);
+  };
+
+  const getNowPlayingSubmission = () => {
+    return submissions.find(s => s.id === nowPlayingId);
+  };
+
   const getQueuedSubmissions = () => {
     const pending = submissions.filter(s => s.submissionType === 'review' && s.status === 'pending');
     
@@ -718,6 +779,41 @@ export default function MusicSubmissionPlatform() {
             </div>
           )}
 
+          {/* Now Playing Section */}
+          {nowPlayingId && getNowPlayingSubmission() && (
+            <div className="bg-gradient-to-r from-purple-900/50 to-pink-900/50 backdrop-blur rounded-xl p-6 mb-6 border-2 border-purple-500">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center animate-pulse">
+                    <Music className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold">Now Playing</h3>
+                    <p className="text-sm text-purple-200">Currently being reviewed</p>
+                  </div>
+                </div>
+                <button
+                  onClick={clearNowPlaying}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-semibold text-sm"
+                >
+                  Clear
+                </button>
+              </div>
+              <div className="bg-black/30 rounded-lg p-4">
+                <p className="text-2xl font-bold mb-1">{getNowPlayingSubmission().trackTitle}</p>
+                <p className="text-lg text-gray-300 mb-2">by {getNowPlayingSubmission().artistName}</p>
+                <div className="flex gap-2 items-center">
+                  <span className={`px-3 py-1 ${getPriorityInfo(getNowPlayingSubmission().priority).color} rounded-full text-xs font-bold`}>
+                    {getPriorityInfo(getNowPlayingSubmission().priority).label}
+                  </span>
+                  {getNowPlayingSubmission().socialHandle && (
+                    <span className="text-sm text-gray-400">TikTok: {getNowPlayingSubmission().socialHandle}</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Queue Manager - Drag and Drop */}
           <div className="bg-gray-800/50 backdrop-blur rounded-xl p-6 mb-6 border border-gray-700">
             <h3 className="text-xl font-bold mb-4">Queue Manager (Drag to Reorder)</h3>
@@ -744,6 +840,22 @@ export default function MusicSubmissionPlatform() {
                     <span className={`px-3 py-1 ${info.color} rounded-full text-xs font-bold`}>
                       {info.label}
                     </span>
+                    {nowPlayingId !== sub.id && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setNowPlaying(sub.id);
+                        }}
+                        className="px-3 py-1 bg-purple-600 hover:bg-purple-700 rounded text-xs font-semibold"
+                      >
+                        Set Now Playing
+                      </button>
+                    )}
+                    {nowPlayingId === sub.id && (
+                      <span className="px-3 py-1 bg-green-600 rounded text-xs font-semibold flex items-center gap-1">
+                        <Music className="w-3 h-3" /> Playing
+                      </span>
+                    )}
                   </div>
                 );
               })}
@@ -831,7 +943,7 @@ export default function MusicSubmissionPlatform() {
                             </select>
                           </td>
                           <td className="px-4 py-3">
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 flex-wrap">
                               {sub.fileLink ? (
                                 <a
                                   href={sub.fileLink}
@@ -851,6 +963,14 @@ export default function MusicSubmissionPlatform() {
                                 </a>
                               ) : (
                                 <span className="px-3 py-1 bg-gray-600 rounded text-xs">No File</span>
+                              )}
+                              {sub.submissionType === 'review' && sub.status === 'pending' && nowPlayingId !== sub.id && (
+                                <button
+                                  onClick={() => setNowPlaying(sub.id)}
+                                  className="px-3 py-1 bg-purple-600 hover:bg-purple-700 rounded text-xs font-semibold"
+                                >
+                                  Now Playing
+                                </button>
                               )}
                               <button
                                 onClick={() => deleteSubmission(sub.id)}
@@ -1288,6 +1408,29 @@ export default function MusicSubmissionPlatform() {
               </button>
             </div>
             <div className="p-6 overflow-y-auto max-h-[calc(80vh-80px)]">
+              {/* Now Playing Section in Public Queue */}
+              {nowPlayingId && getNowPlayingSubmission() && (
+                <div className="mb-6 bg-gradient-to-r from-purple-900/50 to-pink-900/50 backdrop-blur rounded-xl p-4 border-2 border-purple-500">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center animate-pulse">
+                      <Music className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold">Now Playing</h3>
+                      <p className="text-xs text-purple-200">Currently being reviewed</p>
+                    </div>
+                  </div>
+                  <div className="bg-black/30 rounded-lg p-3">
+                    <p className="text-xl font-bold mb-1">{getNowPlayingSubmission().trackTitle}</p>
+                    <p className="text-gray-300 mb-2">by {getNowPlayingSubmission().artistName}</p>
+                    <span className={`px-3 py-1 ${getPriorityInfo(getNowPlayingSubmission().priority).color} rounded-full text-xs font-bold`}>
+                      {getPriorityInfo(getNowPlayingSubmission().priority).label}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Queue List */}
               {getQueuedSubmissions().slice(0, 20).length === 0 ? (
                 <p className="text-center text-gray-400 py-8">No submissions in queue</p>
               ) : (
