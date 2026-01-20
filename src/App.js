@@ -21,7 +21,8 @@ export default function MusicSubmissionPlatform() {
     socialHandle: '',
     priority: 'free',
     mixNotes: '',
-    mixOption: 'standard'
+    mixOption: 'standard',
+    fileLink: ''
   });
   const fileInputRef = useRef(null);
   const isLive = true;
@@ -49,22 +50,50 @@ export default function MusicSubmissionPlatform() {
 
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
-    if (file && file.type.startsWith('audio/')) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setUploadedFile({
-          name: file.name,
-          data: event.target.result,
-          type: file.type
-        });
-      };
-      reader.readAsDataURL(file);
+    if (file) {
+      // For mix & master, accept zip files. For reviews, accept audio files
+      const validType = submissionType === 'mix'
+        ? (file.type === 'application/zip' || file.type === 'application/x-zip-compressed' || file.name.endsWith('.zip'))
+        : file.type.startsWith('audio/');
+
+      if (validType) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          setUploadedFile({
+            name: file.name,
+            data: event.target.result,
+            type: file.type
+          });
+        };
+        reader.readAsDataURL(file);
+      } else {
+        alert(submissionType === 'mix'
+          ? 'Please upload a ZIP file for Mix & Master submissions'
+          : 'Please upload an audio file (MP3, WAV, etc.)'
+        );
+      }
     }
   };
 
   const handleSubmit = async () => {
-    if (!uploadedFile || !formData.email || !formData.artistName || !formData.trackTitle) {
-      alert('Please fill in all required fields and upload a track');
+    // For mix & master, require either file OR link. For reviews, require file.
+    const hasFile = uploadedFile !== null;
+    const hasLink = formData.fileLink.trim() !== '';
+
+    if (submissionType === 'mix') {
+      if (!hasFile && !hasLink) {
+        alert('Please either upload a ZIP file or provide a WeTransfer/Google Drive link');
+        return;
+      }
+    } else {
+      if (!hasFile) {
+        alert('Please upload a track');
+        return;
+      }
+    }
+
+    if (!formData.email || !formData.artistName || !formData.trackTitle) {
+      alert('Please fill in all required fields');
       return;
     }
 
@@ -88,9 +117,9 @@ export default function MusicSubmissionPlatform() {
       id: Date.now().toString(),
       ...formData,
       submissionType,
-      fileName: uploadedFile.name,
-      fileData: uploadedFile.data,
-      fileType: uploadedFile.type,
+      fileName: uploadedFile ? uploadedFile.name : 'Link provided',
+      fileData: uploadedFile ? uploadedFile.data : null,
+      fileType: uploadedFile ? uploadedFile.type : null,
       submittedAt: new Date().toISOString(),
       status: 'pending',
       paid: requiresPayment
@@ -103,7 +132,7 @@ export default function MusicSubmissionPlatform() {
       localStorage.setItem('submissions', JSON.stringify(existing));
 
       await loadSubmissions();
-      setFormData({ email: '', artistName: '', trackTitle: '', socialHandle: '', priority: 'free', mixNotes: '', mixOption: 'standard' });
+      setFormData({ email: '', artistName: '', trackTitle: '', socialHandle: '', priority: 'free', mixNotes: '', mixOption: 'standard', fileLink: '' });
       setUploadedFile(null);
 
       if (requiresPayment) {
@@ -415,7 +444,11 @@ export default function MusicSubmissionPlatform() {
                           </td>
                           <td className="px-4 py-3">
                             <p className="font-medium">{sub.trackTitle}</p>
-                            <p className="text-xs text-gray-400">{sub.fileName}</p>
+                            {sub.fileLink ? (
+                              <p className="text-xs text-blue-400">📎 Link provided</p>
+                            ) : (
+                              <p className="text-xs text-gray-400">{sub.fileName}</p>
+                            )}
                           </td>
                           <td className="px-4 py-3">
                             <span className={`px-2 py-1 rounded text-xs font-semibold ${
@@ -455,13 +488,26 @@ export default function MusicSubmissionPlatform() {
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex gap-2">
-                              <a
-                                href={sub.fileData}
-                                download={sub.fileName}
-                                className="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-xs font-semibold"
-                              >
-                                Download
-                              </a>
+                              {sub.fileLink ? (
+                                <a
+                                  href={sub.fileLink}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="px-3 py-1 bg-green-600 hover:bg-green-700 rounded text-xs font-semibold"
+                                >
+                                  Open Link
+                                </a>
+                              ) : sub.fileData ? (
+                                <a
+                                  href={sub.fileData}
+                                  download={sub.fileName}
+                                  className="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-xs font-semibold"
+                                >
+                                  Download
+                                </a>
+                              ) : (
+                                <span className="px-3 py-1 bg-gray-600 rounded text-xs">No File</span>
+                              )}
                               <button
                                 onClick={() => deleteSubmission(sub.id)}
                                 className="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-xs font-semibold"
@@ -542,31 +588,45 @@ export default function MusicSubmissionPlatform() {
             <div className="bg-gray-800/50 backdrop-blur rounded-xl p-6 border border-gray-700">
               <div className="flex items-center gap-2 mb-4">
                 <Upload className="w-5 h-5 text-purple-400" />
-                <h2 className="text-xl font-bold">Submit Your Track</h2>
+                <h2 className="text-xl font-bold">
+                  {submissionType === 'mix' ? 'Upload Files or Share Link' : 'Submit Your Track'}
+                </h2>
               </div>
 
               <input
                 type="file"
                 ref={fileInputRef}
                 onChange={handleFileSelect}
-                accept="audio/*"
+                accept={submissionType === 'mix' ? '.zip,application/zip,application/x-zip-compressed' : 'audio/*'}
                 className="hidden"
               />
 
-              <div 
+              <div
                 onClick={() => fileInputRef.current.click()}
                 className="border-2 border-dashed border-gray-600 rounded-lg p-12 text-center cursor-pointer hover:border-purple-500 transition-colors mb-4"
               >
                 <Upload className="w-12 h-12 mx-auto mb-3 text-gray-400" />
-                <p className="text-gray-300">Drag track or paste link</p>
+                <p className="text-gray-300">
+                  {submissionType === 'mix' ? 'Click to upload ZIP file' : 'Click to upload track'}
+                </p>
                 {uploadedFile && (
                   <p className="mt-2 text-sm text-green-400">✓ {uploadedFile.name}</p>
                 )}
               </div>
 
-              <button className="w-full py-2 bg-blue-600 hover:bg-blue-700 rounded-lg">
-                Paste Link...
-              </button>
+              {submissionType === 'mix' && (
+                <div>
+                  <div className="text-center text-gray-400 text-sm mb-3">- OR -</div>
+                  <input
+                    type="text"
+                    value={formData.fileLink}
+                    onChange={(e) => setFormData({...formData, fileLink: e.target.value})}
+                    placeholder="Paste WeTransfer or Google Drive link"
+                    className="w-full px-4 py-3 bg-gray-700 rounded-lg border border-gray-600 focus:border-blue-500 outline-none text-sm"
+                  />
+                  <p className="text-xs text-gray-400 mt-2">Share your project files via WeTransfer or Google Drive</p>
+                </div>
+              )}
             </div>
 
             {/* Form Section */}
