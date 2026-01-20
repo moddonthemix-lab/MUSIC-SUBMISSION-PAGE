@@ -913,10 +913,10 @@ export default function MusicSubmissionPlatform() {
       {/* Hero Section */}
       <div className="text-center py-20 px-8">
         <h1 className="text-6xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">
-          Submit Your Music
+          Share Your Music
         </h1>
         <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-          Get your tracks deeply reviewed by charting engineers, get mixes, and get your song mixed on live stream!
+          Get your tracks deeply reviewed by charting engineers, get mixes, and get your song mixed on live stream! Every month is a chance for a free mix for both paid and free participants!
         </p>
         <div className="flex gap-4 justify-center flex-wrap">
           <button 
