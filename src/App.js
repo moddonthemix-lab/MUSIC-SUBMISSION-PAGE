@@ -1134,7 +1134,7 @@ export default function MusicSubmissionPlatform() {
                     </div>
 
                     <div className="bg-blue-900/30 border border-blue-700/50 rounded-lg p-4 mb-4">
-                      <label className="flex items-center gap-3 cursor-pointer">
+                      <label className="flex items-center gap-3 cursor-pointer mb-2">
                         <input
                           type="radio"
                           name="mixOption"
@@ -1148,6 +1148,14 @@ export default function MusicSubmissionPlatform() {
                           <span className="text-2xl font-bold text-blue-300">$60</span>
                         </div>
                       </label>
+                      <div className="flex items-start gap-2 ml-7">
+                        <div className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                        <span className="text-xs text-gray-300">Best for artists who just want it done without live streaming</span>
+                      </div>
                     </div>
 
                     <div className="bg-purple-900/30 border border-purple-700/50 rounded-lg p-4">
@@ -1165,7 +1173,14 @@ export default function MusicSubmissionPlatform() {
                           <span className="text-2xl font-bold text-purple-300">$100</span>
                         </div>
                       </label>
-                      <p className="text-xs text-gray-400 ml-7">Get your track mixed live with audience interaction</p>
+                      <div className="flex items-start gap-2 ml-7">
+                        <div className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                        <span className="text-xs text-gray-300">Best for artists who want to learn, interact, and standout</span>
+                      </div>
                     </div>
                   </div>
                 </>
