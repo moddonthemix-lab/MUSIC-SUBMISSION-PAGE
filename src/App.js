@@ -1499,19 +1499,28 @@ export default function MusicSubmissionPlatform() {
           Get your tracks deeply reviewed by charting engineers, get mixes, and get your song mixed on live stream! Every month is a chance for a free mix for both paid and free participants!
         </p>
         <div className="flex gap-4 justify-center flex-wrap">
-          <button 
+          <button
             onClick={() => setView('submit')}
             className="px-8 py-4 bg-gray-800 hover:bg-gray-700 rounded-full font-bold text-lg transition-all"
           >
             Send Your Music
           </button>
-          <button 
+          <button
+            onClick={() => {
+              setSubmissionType('mix');
+              setView('submit');
+            }}
+            className="px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 rounded-full font-bold text-lg transition-all"
+          >
+            Mix & Master
+          </button>
+          <button
             onClick={() => setShowQueue(true)}
             className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-full font-bold text-lg transition-all"
           >
             View Queue
           </button>
-          <button 
+          <button
             onClick={() => window.open('https://tiktok.com/@moddonthemix', '_blank')}
             className="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-full font-bold text-lg transition-all flex items-center gap-2"
           >
