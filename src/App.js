@@ -36,7 +36,8 @@ export default function MusicSubmissionPlatform() {
     priority: 'free',
     mixNotes: '',
     mixOption: 'standard',
-    fileLink: ''
+    fileLink: '',
+    subscriptionTier: null
   });
   const fileInputRef = useRef(null);
 
@@ -157,7 +158,14 @@ export default function MusicSubmissionPlatform() {
       else if (formData.priority === 'premium') basePrice = 10;
       else if (formData.priority === 'king') basePrice = 25;
     } else {
-      basePrice = formData.mixOption === 'standard' ? 60 : 100;
+      // Handle subscription tiers
+      if (formData.mixOption === 'subscription-tier1') {
+        basePrice = 175;
+      } else if (formData.mixOption === 'subscription-tier2') {
+        basePrice = 325;
+      } else {
+        basePrice = formData.mixOption === 'standard' ? 75 : 100;
+      }
     }
 
     if (basePrice === 0) return { original: 0, discount: 0, final: 0 };
@@ -272,7 +280,7 @@ export default function MusicSubmissionPlatform() {
       if (error) throw error;
 
       await loadSubmissions();
-      setFormData({ email: '', artistName: '', trackTitle: '', socialHandle: '', priority: 'free', mixNotes: '', mixOption: 'standard', fileLink: '' });
+      setFormData({ email: '', artistName: '', trackTitle: '', socialHandle: '', priority: 'free', mixNotes: '', mixOption: 'standard', fileLink: '', subscriptionTier: null });
       setUploadedFile(null);
       setAffiliateCode('');
       setAppliedDiscount(null);
@@ -1145,7 +1153,7 @@ export default function MusicSubmissionPlatform() {
                         />
                         <div className="flex-1 flex items-center justify-between">
                           <span className="text-sm font-semibold">Private No Stream Mix & Master</span>
-                          <span className="text-2xl font-bold text-blue-300">$60</span>
+                          <span className="text-2xl font-bold text-blue-300">$75</span>
                         </div>
                       </label>
                       <div className="flex items-start gap-2 ml-7">
@@ -1180,6 +1188,112 @@ export default function MusicSubmissionPlatform() {
                           </svg>
                         </div>
                         <span className="text-xs text-gray-300">Best for artists who want to learn, interact, and standout</span>
+                      </div>
+                    </div>
+
+                    {/* Subscription Plans Section */}
+                    <div className="mt-6 pt-6 border-t border-gray-700">
+                      <h4 className="text-lg font-bold mb-4 text-center">Monthly Subscription Plans</h4>
+                      <p className="text-xs text-gray-400 text-center mb-4">Save money with our monthly plans for ongoing projects</p>
+
+                      {/* Tier 1: Artist Growth Plan */}
+                      <div className="bg-gradient-to-br from-green-900/30 to-emerald-900/30 border border-green-700/50 rounded-lg p-4 mb-4">
+                        <label className="flex items-start gap-3 cursor-pointer mb-3">
+                          <input
+                            type="radio"
+                            name="mixOption"
+                            value="subscription-tier1"
+                            checked={formData.mixOption === 'subscription-tier1'}
+                            onChange={(e) => setFormData({...formData, mixOption: e.target.value, subscriptionTier: 'tier1'})}
+                            className="w-4 h-4 mt-1"
+                          />
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-sm font-bold text-green-300">Artist Growth Plan</span>
+                              <span className="text-2xl font-bold text-green-400">$175<span className="text-xs text-gray-400">/mo</span></span>
+                            </div>
+                            <div className="space-y-2">
+                              <div className="flex items-start gap-2">
+                                <div className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                  <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                  </svg>
+                                </div>
+                                <span className="text-xs text-gray-300">Up to 3 songs per month</span>
+                              </div>
+                              <div className="flex items-start gap-2">
+                                <div className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                  <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                  </svg>
+                                </div>
+                                <span className="text-xs text-gray-300">Turnaround: 1-3 days per song</span>
+                              </div>
+                              <div className="flex items-start gap-2">
+                                <div className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                  <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                  </svg>
+                                </div>
+                                <span className="text-xs text-gray-300">Professional mix and master</span>
+                              </div>
+                            </div>
+                          </div>
+                        </label>
+                      </div>
+
+                      {/* Tier 2: Pro Artist Access */}
+                      <div className="bg-gradient-to-br from-amber-900/30 to-yellow-900/30 border border-amber-700/50 rounded-lg p-4">
+                        <label className="flex items-start gap-3 cursor-pointer mb-3">
+                          <input
+                            type="radio"
+                            name="mixOption"
+                            value="subscription-tier2"
+                            checked={formData.mixOption === 'subscription-tier2'}
+                            onChange={(e) => setFormData({...formData, mixOption: e.target.value, subscriptionTier: 'tier2'})}
+                            className="w-4 h-4 mt-1"
+                          />
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-sm font-bold text-amber-300">Pro Artist Access</span>
+                              <span className="text-2xl font-bold text-amber-400">$325<span className="text-xs text-gray-400">/mo</span></span>
+                            </div>
+                            <div className="space-y-2">
+                              <div className="flex items-start gap-2">
+                                <div className="w-4 h-4 rounded-full bg-amber-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                  <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                  </svg>
+                                </div>
+                                <span className="text-xs text-gray-300">Up to 5-7 songs per month</span>
+                              </div>
+                              <div className="flex items-start gap-2">
+                                <div className="w-4 h-4 rounded-full bg-amber-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                  <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                  </svg>
+                                </div>
+                                <span className="text-xs text-gray-300">Turnaround: 1-3 days per song</span>
+                              </div>
+                              <div className="flex items-start gap-2">
+                                <div className="w-4 h-4 rounded-full bg-amber-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                  <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                  </svg>
+                                </div>
+                                <span className="text-xs text-gray-300">Professional mix and master</span>
+                              </div>
+                              <div className="flex items-start gap-2">
+                                <div className="w-4 h-4 rounded-full bg-amber-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                  <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                  </svg>
+                                </div>
+                                <span className="text-xs text-gray-300">Priority support</span>
+                              </div>
+                            </div>
+                          </div>
+                        </label>
                       </div>
                     </div>
                   </div>
