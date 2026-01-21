@@ -1104,8 +1104,14 @@ export default function MusicSubmissionPlatform() {
                 <>
                   {/* Mix & Master Options */}
                   <h2 className="text-xl font-bold mb-4">Selected Service</h2>
+
+                  {/* ONE-TIME SERVICES SECTION */}
                   <div className="bg-gray-900/50 rounded-lg p-6 mb-6">
-                    <h3 className="text-2xl font-bold mb-4">Mix & Master</h3>
+                    <div className="text-center mb-6">
+                      <h3 className="text-2xl font-bold mb-2">One-Time Services</h3>
+                      <p className="text-sm text-gray-400">Pay per project - perfect for single tracks</p>
+                    </div>
+
                     <div className="space-y-3 mb-6">
                       <div className="flex items-start gap-2">
                         <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -1191,13 +1197,17 @@ export default function MusicSubmissionPlatform() {
                       </div>
                     </div>
 
-                    {/* Subscription Plans Section */}
-                    <div className="mt-6 pt-6 border-t border-gray-700">
-                      <h4 className="text-lg font-bold mb-4 text-center">Monthly Subscription Plans</h4>
-                      <p className="text-xs text-gray-400 text-center mb-4">Save money with our monthly plans for ongoing projects</p>
+                  </div>
 
-                      {/* Tier 1: Artist Growth Plan */}
-                      <div className="bg-gradient-to-br from-green-900/30 to-emerald-900/30 border border-green-700/50 rounded-lg p-4 mb-4">
+                  {/* MONTHLY MEMBERSHIPS SECTION */}
+                  <div className="bg-gray-900/50 rounded-lg p-6 mb-6">
+                    <div className="text-center mb-6">
+                      <h3 className="text-2xl font-bold mb-2">Monthly Memberships</h3>
+                      <p className="text-sm text-gray-400">Save money with recurring plans - ideal for ongoing releases</p>
+                    </div>
+
+                    {/* Tier 1: Artist Growth Plan */}
+                    <div className="bg-gradient-to-br from-green-900/30 to-emerald-900/30 border border-green-700/50 rounded-lg p-4 mb-4">
                         <label className="flex items-start gap-3 cursor-pointer mb-3">
                           <input
                             type="radio"
