@@ -1306,7 +1306,6 @@ export default function MusicSubmissionPlatform() {
                         </label>
                       </div>
                     </div>
-                  </div>
                 </>
               ) : (
                 <>
