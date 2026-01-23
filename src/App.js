@@ -157,8 +157,10 @@ export default function MusicSubmissionPlatform() {
       if (formData.priority === 'priority') basePrice = 5;
       else if (formData.priority === 'premium') basePrice = 10;
       else if (formData.priority === 'king') basePrice = 25;
+    } else if (submissionType === 'consultation') {
+      basePrice = 30;
     } else {
-      // Handle subscription tiers
+      // Handle subscription tiers for mix & master
       if (formData.mixOption === 'subscription-tier1') {
         basePrice = 175;
       } else if (formData.mixOption === 'subscription-tier2') {
@@ -213,7 +215,7 @@ export default function MusicSubmissionPlatform() {
     // Prevent double submission
     if (isSubmitting) return;
 
-    // For mix & master, require either file OR link. For reviews, require file.
+    // For mix & master, require either file OR link. For reviews, require file. For consultation, no file needed.
     const hasFile = uploadedFile !== null;
     const hasLink = formData.fileLink.trim() !== '';
 
@@ -222,12 +224,13 @@ export default function MusicSubmissionPlatform() {
         alert('Please either upload a ZIP file or provide a WeTransfer/Google Drive link');
         return;
       }
-    } else {
+    } else if (submissionType === 'review') {
       if (!hasFile) {
         alert('Please upload a track');
         return;
       }
     }
+    // For consultation, no file is required
 
     if (!formData.email || !formData.artistName || !formData.trackTitle) {
       alert('Please fill in all required fields');
@@ -236,7 +239,7 @@ export default function MusicSubmissionPlatform() {
 
     setIsSubmitting(true);
 
-    const requiresPayment = submissionType === 'review' ? formData.priority !== 'free' : true;
+    const requiresPayment = submissionType === 'review' ? formData.priority !== 'free' : true; // Mix, consultation always require payment
 
     // Calculate pricing with discount
     const pricing = calculatePrice();
@@ -1031,8 +1034,8 @@ export default function MusicSubmissionPlatform() {
           </div>
 
           {/* Tab Selection */}
-          <div className="flex gap-4 mb-6 justify-center">
-            <button 
+          <div className="flex gap-4 mb-6 justify-center flex-wrap">
+            <button
               onClick={() => setSubmissionType('review')}
               className={`px-6 py-2 rounded-full font-semibold flex items-center gap-2 ${
                 submissionType === 'review' ? 'bg-purple-600' : 'bg-gray-700'
@@ -1041,7 +1044,7 @@ export default function MusicSubmissionPlatform() {
               <Music className="w-4 h-4" />
               Live Review
             </button>
-            <button 
+            <button
               onClick={() => setSubmissionType('mix')}
               className={`px-6 py-2 rounded-full font-semibold ${
                 submissionType === 'mix' ? 'bg-blue-600' : 'bg-gray-700'
@@ -1049,17 +1052,27 @@ export default function MusicSubmissionPlatform() {
             >
               Mix & Master
             </button>
+            <button
+              onClick={() => setSubmissionType('consultation')}
+              className={`px-6 py-2 rounded-full font-semibold ${
+                submissionType === 'consultation' ? 'bg-orange-600' : 'bg-gray-700'
+              }`}
+            >
+              Consultation
+            </button>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
             {/* Upload Section */}
             <div className="bg-gray-800/50 backdrop-blur rounded-xl p-6 border border-gray-700">
-              <div className="flex items-center gap-2 mb-4">
-                <Upload className="w-5 h-5 text-purple-400" />
-                <h2 className="text-xl font-bold">
-                  {submissionType === 'mix' ? 'Upload Files or Share Link' : 'Submit Your Track'}
-                </h2>
-              </div>
+              {submissionType !== 'consultation' ? (
+                <>
+                  <div className="flex items-center gap-2 mb-4">
+                    <Upload className="w-5 h-5 text-purple-400" />
+                    <h2 className="text-xl font-bold">
+                      {submissionType === 'mix' ? 'Upload Files or Share Link' : 'Submit Your Track'}
+                    </h2>
+                  </div>
 
               <input
                 type="file"
@@ -1096,11 +1109,72 @@ export default function MusicSubmissionPlatform() {
                   <p className="text-xs text-gray-400 mt-2">Share your project files via WeTransfer or Google Drive</p>
                 </div>
               )}
+                </>
+              ) : (
+                <>
+                  {/* Consultation Info Section */}
+                  <div className="text-center">
+                    <h2 className="text-2xl font-bold mb-4 text-orange-400">Personal Consultation</h2>
+                    <div className="bg-orange-900/20 border border-orange-700/50 rounded-lg p-6 text-left">
+                      <h3 className="text-lg font-bold mb-3">Looking to get a consultation on your own personal mixes, set up?</h3>
+                      <p className="text-gray-300 mb-4">
+                        Book today to get an in-depth analysis on your personal set up, equipment, your recording and mixing process, your plugins and mix bus, just in general how to better your own sound personally.
+                      </p>
+                      <div className="bg-black/30 rounded-lg p-4 mb-4">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xl font-bold">One-on-One Session</span>
+                          <span className="text-3xl font-bold text-orange-400">$30</span>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-start gap-2">
+                          <div className="w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                          <span className="text-sm text-gray-300">Personalized feedback on your setup</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <div className="w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                          <span className="text-sm text-gray-300">Equipment and plugin recommendations</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <div className="w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                          <span className="text-sm text-gray-300">Mix bus and recording process analysis</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <div className="w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                          <span className="text-sm text-gray-300">Actionable tips to improve your sound</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Form Section */}
             <div className="bg-gray-800/50 backdrop-blur rounded-xl p-6 border border-gray-700">
-              {submissionType === 'mix' ? (
+              {submissionType === 'consultation' ? (
+                <>
+                  {/* Consultation - No service selection needed, just contact form */}
+                  <h2 className="text-xl font-bold mb-4">Book Your Consultation</h2>
+                  <p className="text-sm text-gray-400 mb-6">Fill out the form below and we'll get back to you to schedule your session.</p>
+                </>
+              ) : submissionType === 'mix' ? (
                 <>
                   {/* Mix & Master Options */}
                   <h2 className="text-xl font-bold mb-4">Selected Service</h2>
@@ -1416,7 +1490,7 @@ export default function MusicSubmissionPlatform() {
               </div>
 
               {/* Discount Code Section - Only show for paid submissions */}
-              {(submissionType === 'mix' || formData.priority !== 'free') && (
+              {(submissionType === 'mix' || submissionType === 'consultation' || formData.priority !== 'free') && (
                 <div className="mb-4">
                   <label className="text-sm font-semibold block mb-2">Discount Code (optional)</label>
                   <div className="flex gap-2">
@@ -1476,7 +1550,7 @@ export default function MusicSubmissionPlatform() {
                 )}
               </button>
 
-              {(submissionType === 'mix' || formData.priority !== 'free') && !isSubmitting && (
+              {(submissionType === 'mix' || submissionType === 'consultation' || formData.priority !== 'free') && !isSubmitting && (
                 <p className="text-xs text-gray-400 text-center mt-2">
                   Cash App will open in a new window for payment
                 </p>
@@ -1513,6 +1587,15 @@ export default function MusicSubmissionPlatform() {
             className="px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 rounded-full font-bold text-lg transition-all"
           >
             Mix & Master
+          </button>
+          <button
+            onClick={() => {
+              setSubmissionType('consultation');
+              setView('submit');
+            }}
+            className="px-8 py-4 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 rounded-full font-bold text-lg transition-all"
+          >
+            Consultation
           </button>
           <button
             onClick={() => setShowQueue(true)}
