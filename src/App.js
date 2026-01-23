@@ -1598,6 +1598,12 @@ export default function MusicSubmissionPlatform() {
             Consultation
           </button>
           <button
+            onClick={() => window.open('https://linktr.ee/moddonthemix', '_blank')}
+            className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 rounded-full font-bold text-lg transition-all"
+          >
+            Pro Tools Templates
+          </button>
+          <button
             onClick={() => setShowQueue(true)}
             className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-full font-bold text-lg transition-all"
           >
