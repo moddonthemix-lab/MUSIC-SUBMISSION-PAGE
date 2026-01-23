@@ -158,7 +158,7 @@ export default function MusicSubmissionPlatform() {
       else if (formData.priority === 'premium') basePrice = 10;
       else if (formData.priority === 'king') basePrice = 25;
     } else if (submissionType === 'consultation') {
-      basePrice = 30;
+      basePrice = 50;
     } else {
       // Handle subscription tiers for mix & master
       if (formData.mixOption === 'subscription-tier1') {
@@ -1121,12 +1121,21 @@ export default function MusicSubmissionPlatform() {
                         Book today to get an in-depth analysis on your personal set up, equipment, your recording and mixing process, your plugins and mix bus, just in general how to better your own sound personally.
                       </p>
                       <div className="bg-black/30 rounded-lg p-4 mb-4">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xl font-bold">One-on-One Session</span>
-                          <span className="text-3xl font-bold text-orange-400">$30</span>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xl font-bold">One Hour Session</span>
+                          <span className="text-3xl font-bold text-orange-400">$50</span>
                         </div>
+                        <p className="text-sm text-gray-400">Live video call one-on-one or personal phone call</p>
                       </div>
                       <div className="space-y-2">
+                        <div className="flex items-start gap-2">
+                          <div className="w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                          <span className="text-sm text-gray-300">One hour live video call or personal phone call</span>
+                        </div>
                         <div className="flex items-start gap-2">
                           <div className="w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center flex-shrink-0 mt-0.5">
                             <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1602,6 +1611,12 @@ export default function MusicSubmissionPlatform() {
             className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 rounded-full font-bold text-lg transition-all"
           >
             Pro Tools Templates
+          </button>
+          <button
+            onClick={() => window.open('https://credits.muso.ai/profile/fd6afb53-fc84-4ba3-9ba8-495305dfde75', '_blank')}
+            className="px-8 py-4 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 rounded-full font-bold text-lg transition-all"
+          >
+            Portfolio
           </button>
           <button
             onClick={() => setShowQueue(true)}
