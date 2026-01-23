@@ -1613,6 +1613,12 @@ export default function MusicSubmissionPlatform() {
             Pro Tools Templates
           </button>
           <button
+            onClick={() => window.open('https://credits.muso.ai/profile/fd6afb53-fc84-4ba3-9ba8-495305dfde75', '_blank')}
+            className="px-8 py-4 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 rounded-full font-bold text-lg transition-all"
+          >
+            Portfolio
+          </button>
+          <button
             onClick={() => setShowQueue(true)}
             className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-full font-bold text-lg transition-all"
           >
