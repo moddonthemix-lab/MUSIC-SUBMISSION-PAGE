@@ -1503,7 +1503,7 @@ export default function MusicSubmissionPlatform() {
             onClick={() => setView('submit')}
             className="px-8 py-4 bg-gray-800 hover:bg-gray-700 rounded-full font-bold text-lg transition-all"
           >
-            Send Your Music
+            Get Music Reviews
           </button>
           <button
             onClick={() => {
