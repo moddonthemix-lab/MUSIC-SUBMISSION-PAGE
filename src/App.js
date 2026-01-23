@@ -1619,12 +1619,6 @@ export default function MusicSubmissionPlatform() {
             Portfolio
           </button>
           <button
-            onClick={() => setShowQueue(true)}
-            className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-full font-bold text-lg transition-all"
-          >
-            View Queue
-          </button>
-          <button
             onClick={() => window.open('https://tiktok.com/@moddonthemix', '_blank')}
             className="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-full font-bold text-lg transition-all flex items-center gap-2"
           >
