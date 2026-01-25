@@ -167,6 +167,7 @@ export default function MusicSubmissionPlatform() {
       else if (formData.recordingDuration === '3hour') basePrice = 150;
       else if (formData.recordingDuration === '4hour') basePrice = 180;
       else if (formData.recordingDuration === '5hour') basePrice = 225;
+      else if (formData.recordingDuration === '8hour') basePrice = 320;
     } else {
       // Handle subscription tiers for mix & master
       if (formData.mixOption === 'subscription-tier1') {
@@ -590,7 +591,8 @@ export default function MusicSubmissionPlatform() {
         '2hour': 'https://calendly.com/moddonthemix/2-hour-studio-session-110',
         '3hour': 'https://calendly.com/moddonthemix/3-hour-studio-session',
         '4hour': 'https://calendly.com/moddonthemix/4hr-block-deal',
-        '5hour': 'https://calendly.com/moddonthemix/5hr-session'
+        '5hour': 'https://calendly.com/moddonthemix/5hr-session',
+        '8hour': 'https://calendly.com/moddonthemix/8hr-session'
       };
       return durationLinks[submission.mixOption] || null;
     }
@@ -1353,6 +1355,22 @@ export default function MusicSubmissionPlatform() {
                             <div className="flex-1 flex items-center justify-between">
                               <span className="font-semibold">5 Hour Session</span>
                               <span className="text-2xl font-bold text-yellow-400">$225 <span className="text-sm text-gray-400">($45/hr)</span></span>
+                            </div>
+                          </label>
+                        </div>
+                        <div className="bg-black/30 rounded-lg p-3">
+                          <label className="flex items-center gap-3 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="recordingDuration"
+                              value="8hour"
+                              checked={formData.recordingDuration === '8hour'}
+                              onChange={(e) => setFormData({...formData, recordingDuration: e.target.value})}
+                              className="w-4 h-4"
+                            />
+                            <div className="flex-1 flex items-center justify-between">
+                              <span className="font-semibold">8 Hour Session</span>
+                              <span className="text-2xl font-bold text-yellow-400">$320 <span className="text-sm text-gray-400">($40/hr)</span></span>
                             </div>
                           </label>
                         </div>
