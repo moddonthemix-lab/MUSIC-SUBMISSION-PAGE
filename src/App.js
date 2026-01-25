@@ -37,7 +37,8 @@ export default function MusicSubmissionPlatform() {
     mixNotes: '',
     mixOption: 'standard',
     fileLink: '',
-    subscriptionTier: null
+    subscriptionTier: null,
+    recordingDuration: '1hour'
   });
   const fileInputRef = useRef(null);
 
@@ -159,6 +160,13 @@ export default function MusicSubmissionPlatform() {
       else if (formData.priority === 'king') basePrice = 25;
     } else if (submissionType === 'consultation') {
       basePrice = 50;
+    } else if (submissionType === 'recording') {
+      // Handle recording session pricing
+      if (formData.recordingDuration === '1hour') basePrice = 60;
+      else if (formData.recordingDuration === '2hour') basePrice = 110;
+      else if (formData.recordingDuration === '3hour') basePrice = 165;
+      else if (formData.recordingDuration === '4hour') basePrice = 200;
+      else if (formData.recordingDuration === '5hour') basePrice = 250;
     } else {
       // Handle subscription tiers for mix & master
       if (formData.mixOption === 'subscription-tier1') {
@@ -215,7 +223,7 @@ export default function MusicSubmissionPlatform() {
     // Prevent double submission
     if (isSubmitting) return;
 
-    // For mix & master, require either file OR link. For reviews, require file. For consultation, no file needed.
+    // For mix & master, require either file OR link. For reviews, require file. For consultation and recording, no file needed.
     const hasFile = uploadedFile !== null;
     const hasLink = formData.fileLink.trim() !== '';
 
@@ -230,7 +238,7 @@ export default function MusicSubmissionPlatform() {
         return;
       }
     }
-    // For consultation, no file is required
+    // For consultation and recording, no file is required
 
     if (!formData.email || !formData.artistName || !formData.trackTitle) {
       alert('Please fill in all required fields');
@@ -239,7 +247,7 @@ export default function MusicSubmissionPlatform() {
 
     setIsSubmitting(true);
 
-    const requiresPayment = submissionType === 'review' ? formData.priority !== 'free' : true; // Mix, consultation always require payment
+    const requiresPayment = submissionType === 'review' ? formData.priority !== 'free' : true; // Mix, consultation, recording always require payment
 
     // Calculate pricing with discount
     const pricing = calculatePrice();
@@ -258,11 +266,11 @@ export default function MusicSubmissionPlatform() {
       track_title: formData.trackTitle,
       social_handle: formData.socialHandle || null,
       priority: formData.priority,
-      mix_notes: formData.mixNotes || null,
-      mix_option: formData.mixOption || null,
+      mix_notes: submissionType === 'recording' ? `Recording Session: ${formData.recordingDuration}` : (formData.mixNotes || null),
+      mix_option: submissionType === 'recording' ? formData.recordingDuration : (formData.mixOption || null),
       file_link: formData.fileLink || null,
       submission_type: submissionType,
-      file_name: uploadedFile ? uploadedFile.name : 'Link provided',
+      file_name: uploadedFile ? uploadedFile.name : (submissionType === 'recording' || submissionType === 'consultation' ? 'No file required' : 'Link provided'),
       file_data: uploadedFile ? uploadedFile.data : null,
       file_type: uploadedFile ? uploadedFile.type : null,
       submitted_at: new Date().toISOString(),
@@ -283,13 +291,28 @@ export default function MusicSubmissionPlatform() {
       if (error) throw error;
 
       await loadSubmissions();
-      setFormData({ email: '', artistName: '', trackTitle: '', socialHandle: '', priority: 'free', mixNotes: '', mixOption: 'standard', fileLink: '', subscriptionTier: null });
+
+      // Get Calendly link for consultation and recording sessions
+      const calendlyLink = getCalendlyLink(submissionData);
+
+      // Auto-open Calendly link for booking
+      if (calendlyLink) {
+        setTimeout(() => {
+          window.open(calendlyLink, '_blank');
+        }, 1000); // Small delay to ensure Cash App opens first
+      }
+
+      setFormData({ email: '', artistName: '', trackTitle: '', socialHandle: '', priority: 'free', mixNotes: '', mixOption: 'standard', fileLink: '', subscriptionTier: null, recordingDuration: '1hour' });
       setUploadedFile(null);
       setAffiliateCode('');
       setAppliedDiscount(null);
 
       if (requiresPayment) {
-        alert('Submission successful! Cash App has opened - please complete your payment.');
+        if (calendlyLink) {
+          alert(`Submission successful!\n\n1. Cash App has opened - please complete your payment of $${pricing.final.toFixed(2)}\n2. Your Calendly booking link has opened - book your session!\n\nCalendly Link: ${calendlyLink}`);
+        } else {
+          alert('Submission successful! Cash App has opened - please complete your payment.');
+        }
       } else {
         alert('Free submission successful!');
       }
@@ -557,6 +580,34 @@ export default function MusicSubmissionPlatform() {
     return info[priority];
   };
 
+  const getCalendlyLink = (submission) => {
+    // Return appropriate Calendly link based on submission type
+    if (submission.submissionType === 'consultation') {
+      return 'https://calendly.com/moddonthemix/30min';
+    } else if (submission.submissionType === 'recording') {
+      const durationLinks = {
+        '1hour': 'https://calendly.com/moddonthemix/1hr-session',
+        '2hour': 'https://calendly.com/moddonthemix/2-hour-studio-session-110',
+        '3hour': 'https://calendly.com/moddonthemix/3-hour-studio-session',
+        '4hour': 'https://calendly.com/moddonthemix/4hr-block-deal',
+        '5hour': 'https://calendly.com/moddonthemix/5hr-session'
+      };
+      return durationLinks[submission.mixOption] || null;
+    }
+    return null;
+  };
+
+  const copyCalendlyLink = (submission) => {
+    const link = getCalendlyLink(submission);
+    if (link) {
+      navigator.clipboard.writeText(link).then(() => {
+        alert('Calendly link copied to clipboard!');
+      }).catch(() => {
+        alert('Failed to copy link. Link: ' + link);
+      });
+    }
+  };
+
   // ADMIN LOGIN VIEW
   if (view === 'adminLogin') {
     return (
@@ -637,6 +688,8 @@ export default function MusicSubmissionPlatform() {
                   <option value="all">All Types</option>
                   <option value="review">Live Review</option>
                   <option value="mix">Mix & Master</option>
+                  <option value="consultation">Consultation</option>
+                  <option value="recording">Recording Session</option>
                 </select>
               </div>
               <div>
@@ -919,9 +972,14 @@ export default function MusicSubmissionPlatform() {
                           </td>
                           <td className="px-4 py-3">
                             <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                              sub.submissionType === 'review' ? 'bg-purple-600' : 'bg-blue-600'
+                              sub.submissionType === 'review' ? 'bg-purple-600' :
+                              sub.submissionType === 'consultation' ? 'bg-orange-600' :
+                              sub.submissionType === 'recording' ? 'bg-yellow-600' : 'bg-blue-600'
                             }`}>
-                              {sub.submissionType === 'review' ? 'Review' : `Mix ${sub.mixOption === 'live' ? '(Live)' : ''}`}
+                              {sub.submissionType === 'review' ? 'Review' :
+                               sub.submissionType === 'consultation' ? 'Consultation' :
+                               sub.submissionType === 'recording' ? `Recording (${sub.mixOption})` :
+                               `Mix ${sub.mixOption === 'live' ? '(Live)' : ''}`}
                             </span>
                           </td>
                           <td className="px-4 py-3">
@@ -982,6 +1040,24 @@ export default function MusicSubmissionPlatform() {
                                 >
                                   Now Playing
                                 </button>
+                              )}
+                              {getCalendlyLink(sub) && (
+                                <>
+                                  <a
+                                    href={getCalendlyLink(sub)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="px-3 py-1 bg-orange-600 hover:bg-orange-700 rounded text-xs font-semibold"
+                                  >
+                                    Open Calendly
+                                  </a>
+                                  <button
+                                    onClick={() => copyCalendlyLink(sub)}
+                                    className="px-3 py-1 bg-yellow-600 hover:bg-yellow-700 rounded text-xs font-semibold"
+                                  >
+                                    Copy Link
+                                  </button>
+                                </>
                               )}
                               <button
                                 onClick={() => deleteSubmission(sub.id)}
@@ -1060,12 +1136,20 @@ export default function MusicSubmissionPlatform() {
             >
               Consultation
             </button>
+            <button
+              onClick={() => setSubmissionType('recording')}
+              className={`px-6 py-2 rounded-full font-semibold ${
+                submissionType === 'recording' ? 'bg-yellow-600' : 'bg-gray-700'
+              }`}
+            >
+              Recording Session
+            </button>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
             {/* Upload Section */}
             <div className="bg-gray-800/50 backdrop-blur rounded-xl p-6 border border-gray-700">
-              {submissionType !== 'consultation' ? (
+              {submissionType !== 'consultation' && submissionType !== 'recording' ? (
                 <>
                   <div className="flex items-center gap-2 mb-4">
                     <Upload className="w-5 h-5 text-purple-400" />
@@ -1110,7 +1194,7 @@ export default function MusicSubmissionPlatform() {
                 </div>
               )}
                 </>
-              ) : (
+              ) : submissionType === 'consultation' ? (
                 <>
                   {/* Consultation Info Section */}
                   <div className="text-center">
@@ -1172,7 +1256,137 @@ export default function MusicSubmissionPlatform() {
                     </div>
                   </div>
                 </>
-              )}
+              ) : submissionType === 'recording' ? (
+                <>
+                  {/* Recording Session Info Section */}
+                  <div className="text-center">
+                    <h2 className="text-2xl font-bold mb-4 text-yellow-400">Recording Session</h2>
+                    <div className="bg-yellow-900/20 border border-yellow-700/50 rounded-lg p-6 text-left">
+                      <h3 className="text-lg font-bold mb-3">Book a Professional Recording Session</h3>
+                      <p className="text-gray-300 mb-4">
+                        Record your tracks at our professional studio with industry-standard equipment and expert guidance.
+                        Choose your session duration and let's create something amazing together.
+                      </p>
+                      <div className="space-y-3 mb-4">
+                        <div className="bg-black/30 rounded-lg p-3">
+                          <label className="flex items-center gap-3 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="recordingDuration"
+                              value="1hour"
+                              checked={formData.recordingDuration === '1hour'}
+                              onChange={(e) => setFormData({...formData, recordingDuration: e.target.value})}
+                              className="w-4 h-4"
+                            />
+                            <div className="flex-1 flex items-center justify-between">
+                              <span className="font-semibold">1 Hour Session</span>
+                              <span className="text-2xl font-bold text-yellow-400">$60</span>
+                            </div>
+                          </label>
+                        </div>
+                        <div className="bg-black/30 rounded-lg p-3">
+                          <label className="flex items-center gap-3 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="recordingDuration"
+                              value="2hour"
+                              checked={formData.recordingDuration === '2hour'}
+                              onChange={(e) => setFormData({...formData, recordingDuration: e.target.value})}
+                              className="w-4 h-4"
+                            />
+                            <div className="flex-1 flex items-center justify-between">
+                              <span className="font-semibold">2 Hour Session</span>
+                              <span className="text-2xl font-bold text-yellow-400">$110 <span className="text-sm text-gray-400">($55/hr)</span></span>
+                            </div>
+                          </label>
+                        </div>
+                        <div className="bg-black/30 rounded-lg p-3">
+                          <label className="flex items-center gap-3 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="recordingDuration"
+                              value="3hour"
+                              checked={formData.recordingDuration === '3hour'}
+                              onChange={(e) => setFormData({...formData, recordingDuration: e.target.value})}
+                              className="w-4 h-4"
+                            />
+                            <div className="flex-1 flex items-center justify-between">
+                              <span className="font-semibold">3 Hour Session</span>
+                              <span className="text-2xl font-bold text-yellow-400">$165 <span className="text-sm text-gray-400">($55/hr)</span></span>
+                            </div>
+                          </label>
+                        </div>
+                        <div className="bg-black/30 rounded-lg p-3">
+                          <label className="flex items-center gap-3 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="recordingDuration"
+                              value="4hour"
+                              checked={formData.recordingDuration === '4hour'}
+                              onChange={(e) => setFormData({...formData, recordingDuration: e.target.value})}
+                              className="w-4 h-4"
+                            />
+                            <div className="flex-1 flex items-center justify-between">
+                              <span className="font-semibold">4 Hour Session</span>
+                              <span className="text-2xl font-bold text-yellow-400">$200 <span className="text-sm text-gray-400">($50/hr)</span></span>
+                            </div>
+                          </label>
+                        </div>
+                        <div className="bg-black/30 rounded-lg p-3">
+                          <label className="flex items-center gap-3 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="recordingDuration"
+                              value="5hour"
+                              checked={formData.recordingDuration === '5hour'}
+                              onChange={(e) => setFormData({...formData, recordingDuration: e.target.value})}
+                              className="w-4 h-4"
+                            />
+                            <div className="flex-1 flex items-center justify-between">
+                              <span className="font-semibold">5 Hour Session</span>
+                              <span className="text-2xl font-bold text-yellow-400">$250 <span className="text-sm text-gray-400">($50/hr)</span></span>
+                            </div>
+                          </label>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-start gap-2">
+                          <div className="w-5 h-5 rounded-full bg-yellow-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                          <span className="text-sm text-gray-300">Professional studio equipment</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <div className="w-5 h-5 rounded-full bg-yellow-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                          <span className="text-sm text-gray-300">Expert recording engineer guidance</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <div className="w-5 h-5 rounded-full bg-yellow-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                          <span className="text-sm text-gray-300">High-quality audio files delivered</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <div className="w-5 h-5 rounded-full bg-yellow-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                          <span className="text-sm text-gray-300">Flexible scheduling available</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : null}
             </div>
 
             {/* Form Section */}
@@ -1181,6 +1395,12 @@ export default function MusicSubmissionPlatform() {
                 <>
                   {/* Consultation - No service selection needed, just contact form */}
                   <h2 className="text-xl font-bold mb-4">Book Your Consultation</h2>
+                  <p className="text-sm text-gray-400 mb-6">Fill out the form below and we'll get back to you to schedule your session.</p>
+                </>
+              ) : submissionType === 'recording' ? (
+                <>
+                  {/* Recording Session - No service selection needed, just contact form */}
+                  <h2 className="text-xl font-bold mb-4">Book Your Recording Session</h2>
                   <p className="text-sm text-gray-400 mb-6">Fill out the form below and we'll get back to you to schedule your session.</p>
                 </>
               ) : submissionType === 'mix' ? (
@@ -1499,7 +1719,7 @@ export default function MusicSubmissionPlatform() {
               </div>
 
               {/* Discount Code Section - Only show for paid submissions */}
-              {(submissionType === 'mix' || submissionType === 'consultation' || formData.priority !== 'free') && (
+              {(submissionType === 'mix' || submissionType === 'consultation' || submissionType === 'recording' || formData.priority !== 'free') && (
                 <div className="mb-4">
                   <label className="text-sm font-semibold block mb-2">Discount Code (optional)</label>
                   <div className="flex gap-2">
@@ -1559,7 +1779,7 @@ export default function MusicSubmissionPlatform() {
                 )}
               </button>
 
-              {(submissionType === 'mix' || submissionType === 'consultation' || formData.priority !== 'free') && !isSubmitting && (
+              {(submissionType === 'mix' || submissionType === 'consultation' || submissionType === 'recording' || formData.priority !== 'free') && !isSubmitting && (
                 <p className="text-xs text-gray-400 text-center mt-2">
                   Cash App will open in a new window for payment
                 </p>
@@ -1605,6 +1825,15 @@ export default function MusicSubmissionPlatform() {
             className="px-8 py-4 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 rounded-full font-bold text-lg transition-all"
           >
             Consultation
+          </button>
+          <button
+            onClick={() => {
+              setSubmissionType('recording');
+              setView('submit');
+            }}
+            className="px-8 py-4 bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 rounded-full font-bold text-lg transition-all"
+          >
+            Recording Session
           </button>
           <button
             onClick={() => window.open('https://linktr.ee/moddonthemix', '_blank')}
