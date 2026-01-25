@@ -1271,7 +1271,8 @@ export default function MusicSubmissionPlatform() {
                     <div className="bg-yellow-900/20 border border-yellow-700/50 rounded-lg p-6 text-left">
                       <h3 className="text-lg font-bold mb-3">Book a Professional Recording Session</h3>
                       <p className="text-gray-300 mb-4">
-                        Record your tracks at our professional studio with industry-standard equipment and expert guidance.
+                        Record your tracks at my home studio equipped with professional-grade gear that has been used to record chart-topping songs.
+                        With my expertise and high-quality equipment, we'll capture your sound perfectly.
                         Choose your session duration and let's create something amazing together.
                       </p>
                       <div className="space-y-3 mb-4">
