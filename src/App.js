@@ -291,13 +291,28 @@ export default function MusicSubmissionPlatform() {
       if (error) throw error;
 
       await loadSubmissions();
+
+      // Get Calendly link for consultation and recording sessions
+      const calendlyLink = getCalendlyLink(submissionData);
+
+      // Auto-open Calendly link for booking
+      if (calendlyLink) {
+        setTimeout(() => {
+          window.open(calendlyLink, '_blank');
+        }, 1000); // Small delay to ensure Cash App opens first
+      }
+
       setFormData({ email: '', artistName: '', trackTitle: '', socialHandle: '', priority: 'free', mixNotes: '', mixOption: 'standard', fileLink: '', subscriptionTier: null, recordingDuration: '1hour' });
       setUploadedFile(null);
       setAffiliateCode('');
       setAppliedDiscount(null);
 
       if (requiresPayment) {
-        alert('Submission successful! Cash App has opened - please complete your payment.');
+        if (calendlyLink) {
+          alert(`Submission successful!\n\n1. Cash App has opened - please complete your payment of $${pricing.final.toFixed(2)}\n2. Your Calendly booking link has opened - book your session!\n\nCalendly Link: ${calendlyLink}`);
+        } else {
+          alert('Submission successful! Cash App has opened - please complete your payment.');
+        }
       } else {
         alert('Free submission successful!');
       }
