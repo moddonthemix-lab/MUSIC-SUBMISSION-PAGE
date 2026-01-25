@@ -1261,10 +1261,18 @@ export default function MusicSubmissionPlatform() {
                   {/* Recording Session Info Section */}
                   <div className="text-center">
                     <h2 className="text-2xl font-bold mb-4 text-yellow-400">Recording Session</h2>
+
+                    {/* Location Notice */}
+                    <div className="bg-red-900/30 border-2 border-red-600/70 rounded-lg p-4 mb-4">
+                      <p className="text-red-200 font-bold text-lg">📍 PORTLAND, OREGON ONLY</p>
+                      <p className="text-red-300 text-sm mt-1">In-person studio sessions at our Portland location</p>
+                    </div>
+
                     <div className="bg-yellow-900/20 border border-yellow-700/50 rounded-lg p-6 text-left">
                       <h3 className="text-lg font-bold mb-3">Book a Professional Recording Session</h3>
                       <p className="text-gray-300 mb-4">
-                        Record your tracks at our professional studio with industry-standard equipment and expert guidance.
+                        Record your tracks at my home studio equipped with professional-grade gear that has been used to record chart-topping songs.
+                        With my expertise and high-quality equipment, we'll capture your sound perfectly.
                         Choose your session duration and let's create something amazing together.
                       </p>
                       <div className="space-y-3 mb-4">
