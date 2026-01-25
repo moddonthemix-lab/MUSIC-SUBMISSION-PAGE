@@ -565,6 +565,34 @@ export default function MusicSubmissionPlatform() {
     return info[priority];
   };
 
+  const getCalendlyLink = (submission) => {
+    // Return appropriate Calendly link based on submission type
+    if (submission.submissionType === 'consultation') {
+      return 'https://calendly.com/moddonthemix/30min';
+    } else if (submission.submissionType === 'recording') {
+      const durationLinks = {
+        '1hour': 'https://calendly.com/moddonthemix/1hr-session',
+        '2hour': 'https://calendly.com/moddonthemix/2-hour-studio-session-110',
+        '3hour': 'https://calendly.com/moddonthemix/3-hour-studio-session',
+        '4hour': 'https://calendly.com/moddonthemix/4hr-block-deal',
+        '5hour': 'https://calendly.com/moddonthemix/5hr-session'
+      };
+      return durationLinks[submission.mixOption] || null;
+    }
+    return null;
+  };
+
+  const copyCalendlyLink = (submission) => {
+    const link = getCalendlyLink(submission);
+    if (link) {
+      navigator.clipboard.writeText(link).then(() => {
+        alert('Calendly link copied to clipboard!');
+      }).catch(() => {
+        alert('Failed to copy link. Link: ' + link);
+      });
+    }
+  };
+
   // ADMIN LOGIN VIEW
   if (view === 'adminLogin') {
     return (
@@ -997,6 +1025,24 @@ export default function MusicSubmissionPlatform() {
                                 >
                                   Now Playing
                                 </button>
+                              )}
+                              {getCalendlyLink(sub) && (
+                                <>
+                                  <a
+                                    href={getCalendlyLink(sub)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="px-3 py-1 bg-orange-600 hover:bg-orange-700 rounded text-xs font-semibold"
+                                  >
+                                    Open Calendly
+                                  </a>
+                                  <button
+                                    onClick={() => copyCalendlyLink(sub)}
+                                    className="px-3 py-1 bg-yellow-600 hover:bg-yellow-700 rounded text-xs font-semibold"
+                                  >
+                                    Copy Link
+                                  </button>
+                                </>
                               )}
                               <button
                                 onClick={() => deleteSubmission(sub.id)}
