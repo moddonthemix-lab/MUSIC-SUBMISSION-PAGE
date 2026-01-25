@@ -162,11 +162,11 @@ export default function MusicSubmissionPlatform() {
       basePrice = 50;
     } else if (submissionType === 'recording') {
       // Handle recording session pricing
-      if (formData.recordingDuration === '1hour') basePrice = 60;
-      else if (formData.recordingDuration === '2hour') basePrice = 110;
-      else if (formData.recordingDuration === '3hour') basePrice = 165;
-      else if (formData.recordingDuration === '4hour') basePrice = 200;
-      else if (formData.recordingDuration === '5hour') basePrice = 250;
+      if (formData.recordingDuration === '1hour') basePrice = 55;
+      else if (formData.recordingDuration === '2hour') basePrice = 100;
+      else if (formData.recordingDuration === '3hour') basePrice = 150;
+      else if (formData.recordingDuration === '4hour') basePrice = 180;
+      else if (formData.recordingDuration === '5hour') basePrice = 225;
     } else {
       // Handle subscription tiers for mix & master
       if (formData.mixOption === 'subscription-tier1') {
@@ -1288,7 +1288,7 @@ export default function MusicSubmissionPlatform() {
                             />
                             <div className="flex-1 flex items-center justify-between">
                               <span className="font-semibold">1 Hour Session</span>
-                              <span className="text-2xl font-bold text-yellow-400">$60</span>
+                              <span className="text-2xl font-bold text-yellow-400">$55</span>
                             </div>
                           </label>
                         </div>
@@ -1304,7 +1304,7 @@ export default function MusicSubmissionPlatform() {
                             />
                             <div className="flex-1 flex items-center justify-between">
                               <span className="font-semibold">2 Hour Session</span>
-                              <span className="text-2xl font-bold text-yellow-400">$110 <span className="text-sm text-gray-400">($55/hr)</span></span>
+                              <span className="text-2xl font-bold text-yellow-400">$100 <span className="text-sm text-gray-400">($50/hr)</span></span>
                             </div>
                           </label>
                         </div>
@@ -1320,7 +1320,7 @@ export default function MusicSubmissionPlatform() {
                             />
                             <div className="flex-1 flex items-center justify-between">
                               <span className="font-semibold">3 Hour Session</span>
-                              <span className="text-2xl font-bold text-yellow-400">$165 <span className="text-sm text-gray-400">($55/hr)</span></span>
+                              <span className="text-2xl font-bold text-yellow-400">$150 <span className="text-sm text-gray-400">($50/hr)</span></span>
                             </div>
                           </label>
                         </div>
@@ -1336,7 +1336,7 @@ export default function MusicSubmissionPlatform() {
                             />
                             <div className="flex-1 flex items-center justify-between">
                               <span className="font-semibold">4 Hour Session</span>
-                              <span className="text-2xl font-bold text-yellow-400">$200 <span className="text-sm text-gray-400">($50/hr)</span></span>
+                              <span className="text-2xl font-bold text-yellow-400">$180 <span className="text-sm text-gray-400">($45/hr)</span></span>
                             </div>
                           </label>
                         </div>
@@ -1352,7 +1352,7 @@ export default function MusicSubmissionPlatform() {
                             />
                             <div className="flex-1 flex items-center justify-between">
                               <span className="font-semibold">5 Hour Session</span>
-                              <span className="text-2xl font-bold text-yellow-400">$250 <span className="text-sm text-gray-400">($50/hr)</span></span>
+                              <span className="text-2xl font-bold text-yellow-400">$225 <span className="text-sm text-gray-400">($45/hr)</span></span>
                             </div>
                           </label>
                         </div>
