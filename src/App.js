@@ -38,7 +38,8 @@ export default function MusicSubmissionPlatform() {
     mixOption: 'standard',
     fileLink: '',
     subscriptionTier: null,
-    recordingDuration: '1hour'
+    recordingDuration: '1hour',
+    recordingStudio: 'home'
   });
   const fileInputRef = useRef(null);
 
@@ -162,12 +163,22 @@ export default function MusicSubmissionPlatform() {
       basePrice = 50;
     } else if (submissionType === 'recording') {
       // Handle recording session pricing
-      if (formData.recordingDuration === '1hour') basePrice = 55;
-      else if (formData.recordingDuration === '2hour') basePrice = 100;
-      else if (formData.recordingDuration === '3hour') basePrice = 150;
-      else if (formData.recordingDuration === '4hour') basePrice = 180;
-      else if (formData.recordingDuration === '5hour') basePrice = 225;
-      else if (formData.recordingDuration === '8hour') basePrice = 320;
+      if (formData.recordingStudio === 'home') {
+        // Home studio pricing
+        if (formData.recordingDuration === '1hour') basePrice = 55;
+        else if (formData.recordingDuration === '2hour') basePrice = 100;
+        else if (formData.recordingDuration === '3hour') basePrice = 150;
+        else if (formData.recordingDuration === '4hour') basePrice = 180;
+        else if (formData.recordingDuration === '5hour') basePrice = 225;
+        else if (formData.recordingDuration === '8hour') basePrice = 320;
+      } else if (formData.recordingStudio === 'blackdiamond') {
+        // Black Diamond Studios pricing
+        if (formData.recordingDuration === '1hour') basePrice = 100;
+        else if (formData.recordingDuration === '2hour') basePrice = 195;
+        else if (formData.recordingDuration === '3hour') basePrice = 280;
+        else if (formData.recordingDuration === '4hour') basePrice = 360;
+        else if (formData.recordingDuration === '5hour') basePrice = 435;
+      }
     } else {
       // Handle subscription tiers for mix & master
       if (formData.mixOption === 'subscription-tier1') {
@@ -267,7 +278,7 @@ export default function MusicSubmissionPlatform() {
       track_title: formData.trackTitle,
       social_handle: formData.socialHandle || null,
       priority: formData.priority,
-      mix_notes: submissionType === 'recording' ? `Recording Session: ${formData.recordingDuration}` : (formData.mixNotes || null),
+      mix_notes: submissionType === 'recording' ? `Recording Session: ${formData.recordingDuration} at ${formData.recordingStudio === 'home' ? 'Home Studio' : 'Black Diamond Studios'}` : (formData.mixNotes || null),
       mix_option: submissionType === 'recording' ? formData.recordingDuration : (formData.mixOption || null),
       file_link: formData.fileLink || null,
       submission_type: submissionType,
@@ -303,7 +314,7 @@ export default function MusicSubmissionPlatform() {
         }, 1000); // Small delay to ensure Cash App opens first
       }
 
-      setFormData({ email: '', artistName: '', trackTitle: '', socialHandle: '', priority: 'free', mixNotes: '', mixOption: 'standard', fileLink: '', subscriptionTier: null, recordingDuration: '1hour' });
+      setFormData({ email: '', artistName: '', trackTitle: '', socialHandle: '', priority: 'free', mixNotes: '', mixOption: 'standard', fileLink: '', subscriptionTier: null, recordingDuration: '1hour', recordingStudio: 'home' });
       setUploadedFile(null);
       setAffiliateCode('');
       setAppliedDiscount(null);
@@ -1272,11 +1283,50 @@ export default function MusicSubmissionPlatform() {
 
                     <div className="bg-yellow-900/20 border border-yellow-700/50 rounded-lg p-6 text-left">
                       <h3 className="text-lg font-bold mb-3">Book a Professional Recording Session</h3>
-                      <p className="text-gray-300 mb-4">
-                        Record your tracks at my home studio equipped with professional-grade gear that has been used to record chart-topping songs.
-                        With my expertise and high-quality equipment, we'll capture your sound perfectly.
-                        Choose your session duration and let's create something amazing together.
-                      </p>
+
+                      {/* Studio Selection */}
+                      <div className="mb-6">
+                        <h4 className="font-bold mb-3 text-yellow-300">Select Studio Location:</h4>
+                        <div className="space-y-3">
+                          <div className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${formData.recordingStudio === 'home' ? 'border-yellow-500 bg-yellow-900/30' : 'border-gray-600 bg-black/20'}`} onClick={() => setFormData({...formData, recordingStudio: 'home', recordingDuration: '1hour'})}>
+                            <div className="flex items-start gap-3">
+                              <input
+                                type="radio"
+                                name="recordingStudio"
+                                value="home"
+                                checked={formData.recordingStudio === 'home'}
+                                onChange={(e) => setFormData({...formData, recordingStudio: e.target.value, recordingDuration: '1hour'})}
+                                className="w-5 h-5 mt-0.5"
+                              />
+                              <div className="flex-1">
+                                <div className="font-bold text-lg text-yellow-300">Home Studio Session</div>
+                                <p className="text-sm text-gray-300 mt-1">Professional home studio equipped with chart-topping gear. Perfect for vocals, demos, and quality recordings.</p>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${formData.recordingStudio === 'blackdiamond' ? 'border-yellow-500 bg-yellow-900/30' : 'border-gray-600 bg-black/20'}`} onClick={() => setFormData({...formData, recordingStudio: 'blackdiamond', recordingDuration: '1hour'})}>
+                            <div className="flex items-start gap-3">
+                              <input
+                                type="radio"
+                                name="recordingStudio"
+                                value="blackdiamond"
+                                checked={formData.recordingStudio === 'blackdiamond'}
+                                onChange={(e) => setFormData({...formData, recordingStudio: e.target.value, recordingDuration: '1hour'})}
+                                className="w-5 h-5 mt-0.5"
+                              />
+                              <div className="flex-1">
+                                <div className="font-bold text-lg text-yellow-300">Black Diamond Studios - Large Format</div>
+                                <p className="text-sm text-gray-300 mt-1 mb-2">Professional large format recording studio. Full band tracking, live rooms, premium gear.</p>
+                                <p className="text-xs text-gray-400">📍 1424 SE 162nd Ave, Portland, OR</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Duration Selection */}
+                      <h4 className="font-bold mb-3 text-yellow-300">Select Session Duration:</h4>
                       <div className="space-y-3 mb-4">
                         <div className="bg-black/30 rounded-lg p-3">
                           <label className="flex items-center gap-3 cursor-pointer">
@@ -1290,7 +1340,7 @@ export default function MusicSubmissionPlatform() {
                             />
                             <div className="flex-1 flex items-center justify-between">
                               <span className="font-semibold">1 Hour Session</span>
-                              <span className="text-2xl font-bold text-yellow-400">$55</span>
+                              <span className="text-2xl font-bold text-yellow-400">${formData.recordingStudio === 'home' ? '55' : '100'}</span>
                             </div>
                           </label>
                         </div>
@@ -1306,7 +1356,7 @@ export default function MusicSubmissionPlatform() {
                             />
                             <div className="flex-1 flex items-center justify-between">
                               <span className="font-semibold">2 Hour Session</span>
-                              <span className="text-2xl font-bold text-yellow-400">$100 <span className="text-sm text-gray-400">($50/hr)</span></span>
+                              <span className="text-2xl font-bold text-yellow-400">${formData.recordingStudio === 'home' ? '100' : '195'} <span className="text-sm text-gray-400">(${formData.recordingStudio === 'home' ? '50' : '97.50'}/hr)</span></span>
                             </div>
                           </label>
                         </div>
@@ -1322,7 +1372,7 @@ export default function MusicSubmissionPlatform() {
                             />
                             <div className="flex-1 flex items-center justify-between">
                               <span className="font-semibold">3 Hour Session</span>
-                              <span className="text-2xl font-bold text-yellow-400">$150 <span className="text-sm text-gray-400">($50/hr)</span></span>
+                              <span className="text-2xl font-bold text-yellow-400">${formData.recordingStudio === 'home' ? '150' : '280'} <span className="text-sm text-gray-400">(${formData.recordingStudio === 'home' ? '50' : '93.33'}/hr)</span></span>
                             </div>
                           </label>
                         </div>
@@ -1338,7 +1388,7 @@ export default function MusicSubmissionPlatform() {
                             />
                             <div className="flex-1 flex items-center justify-between">
                               <span className="font-semibold">4 Hour Session</span>
-                              <span className="text-2xl font-bold text-yellow-400">$180 <span className="text-sm text-gray-400">($45/hr)</span></span>
+                              <span className="text-2xl font-bold text-yellow-400">${formData.recordingStudio === 'home' ? '180' : '360'} <span className="text-sm text-gray-400">(${formData.recordingStudio === 'home' ? '45' : '90'}/hr)</span></span>
                             </div>
                           </label>
                         </div>
@@ -1354,26 +1404,28 @@ export default function MusicSubmissionPlatform() {
                             />
                             <div className="flex-1 flex items-center justify-between">
                               <span className="font-semibold">5 Hour Session</span>
-                              <span className="text-2xl font-bold text-yellow-400">$225 <span className="text-sm text-gray-400">($45/hr)</span></span>
+                              <span className="text-2xl font-bold text-yellow-400">${formData.recordingStudio === 'home' ? '225' : '435'} <span className="text-sm text-gray-400">(${formData.recordingStudio === 'home' ? '45' : '87'}/hr)</span></span>
                             </div>
                           </label>
                         </div>
-                        <div className="bg-black/30 rounded-lg p-3">
-                          <label className="flex items-center gap-3 cursor-pointer">
-                            <input
-                              type="radio"
-                              name="recordingDuration"
-                              value="8hour"
-                              checked={formData.recordingDuration === '8hour'}
-                              onChange={(e) => setFormData({...formData, recordingDuration: e.target.value})}
-                              className="w-4 h-4"
-                            />
-                            <div className="flex-1 flex items-center justify-between">
-                              <span className="font-semibold">8 Hour Session</span>
-                              <span className="text-2xl font-bold text-yellow-400">$320 <span className="text-sm text-gray-400">($40/hr)</span></span>
-                            </div>
-                          </label>
-                        </div>
+                        {formData.recordingStudio === 'home' && (
+                          <div className="bg-black/30 rounded-lg p-3">
+                            <label className="flex items-center gap-3 cursor-pointer">
+                              <input
+                                type="radio"
+                                name="recordingDuration"
+                                value="8hour"
+                                checked={formData.recordingDuration === '8hour'}
+                                onChange={(e) => setFormData({...formData, recordingDuration: e.target.value})}
+                                className="w-4 h-4"
+                              />
+                              <div className="flex-1 flex items-center justify-between">
+                                <span className="font-semibold">8 Hour Session</span>
+                                <span className="text-2xl font-bold text-yellow-400">$320 <span className="text-sm text-gray-400">($40/hr)</span></span>
+                              </div>
+                            </label>
+                          </div>
+                        )}
                       </div>
                       <div className="space-y-2">
                         <div className="flex items-start gap-2">
