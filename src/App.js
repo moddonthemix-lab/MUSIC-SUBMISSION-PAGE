@@ -1824,8 +1824,11 @@ export default function MusicSubmissionPlatform() {
         <h1 className="text-6xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">
           Upgrade Your Sound
         </h1>
-        <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-          Get your tracks deeply reviewed by charting engineers, get mixes, and get your song mixed on live stream! Every month is a chance for a free mix for both paid and free participants!
+        <p className="text-xl text-gray-300 mb-4 max-w-2xl mx-auto">
+          Portland based recording studio and mixing studio by @moddonthemix. Professional mixing engineer offering mastering, recording sessions, and live music reviews with chart-topping gear. Get your tracks deeply reviewed by experienced engineers and get your song mixed on live stream!
+        </p>
+        <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
+          📍 <strong className="text-white">Portland, Oregon Recording Studio</strong> | Serving PDX artists and musicians nationwide
         </p>
         <div className="flex gap-4 justify-center flex-wrap">
           <button
@@ -1963,13 +1966,13 @@ export default function MusicSubmissionPlatform() {
         {/* How This Works Section */}
         <div className="mb-16">
           <h2 className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
-            How This Works
+            Portland Music Production Services
           </h2>
-          
+
           <div className="grid md:grid-cols-2 gap-8 mb-8">
             {/* Live Mix Reviews */}
             <div className="bg-gray-800/50 backdrop-blur rounded-2xl p-8 border border-gray-700">
-              <h3 className="text-2xl font-bold mb-6 text-purple-400">How Live Mix Reviews Work</h3>
+              <h3 className="text-2xl font-bold mb-6 text-purple-400">Live Music Reviews & Feedback</h3>
               
               <div className="space-y-6">
                 <div className="flex gap-4">
@@ -2024,7 +2027,7 @@ export default function MusicSubmissionPlatform() {
 
             {/* Live Mix Sessions */}
             <div className="bg-gray-800/50 backdrop-blur rounded-2xl p-8 border border-gray-700">
-              <h3 className="text-2xl font-bold mb-6 text-blue-400">How Live Mix Sessions Work (Paid)</h3>
+              <h3 className="text-2xl font-bold mb-6 text-blue-400">Professional Mixing & Mastering Services</h3>
               
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
