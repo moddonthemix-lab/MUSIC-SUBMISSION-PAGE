@@ -1,0 +1,10 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+Disallow: /admin
+
+# Sitemap
+Sitemap: https://www.moddonthemix.com/sitemap.xml
+
+# Crawl-delay (be nice to servers)
+Crawl-delay: 1
