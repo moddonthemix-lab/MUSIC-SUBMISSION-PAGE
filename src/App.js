@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Upload, Music, Star, ExternalLink } from 'lucide-react';
+import { Upload, Music, Star } from 'lucide-react';
 import './App.css';
 import { supabase } from './supabaseClient';
 
@@ -1927,13 +1927,6 @@ export default function MusicSubmissionPlatform() {
             className="px-8 py-4 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 rounded-full font-bold text-lg transition-all"
           >
             Portfolio
-          </button>
-          <button
-            onClick={() => window.open('https://tiktok.com/@moddonthemix', '_blank')}
-            className="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-full font-bold text-lg transition-all flex items-center gap-2"
-          >
-            JOIN THE LIVE
-            <ExternalLink className="w-5 h-5" />
           </button>
         </div>
         
