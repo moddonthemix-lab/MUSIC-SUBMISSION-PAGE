@@ -1912,6 +1912,128 @@ export default function MusicSubmissionPlatform() {
       </div>
     );
   }
+
+  // CONTACT VIEW
+  if (view === 'contact') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-pink-900 text-white p-8">
+        <div className="max-w-4xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 bg-clip-text text-transparent">
+              Get In Touch
+            </h1>
+            <p className="text-xl text-gray-300">
+              Ready to elevate your sound? Contact us today!
+            </p>
+          </div>
+
+          {/* Contact Cards */}
+          <div className="grid md:grid-cols-2 gap-6 mb-12">
+            {/* Phone Card */}
+            <a
+              href="tel:+17276331566"
+              className="bg-gradient-to-br from-purple-800/40 to-pink-800/40 border border-purple-500/30 rounded-2xl p-8 hover:scale-105 transition-transform cursor-pointer group"
+            >
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-white mb-1">Call Us</h3>
+                  <p className="text-gray-400 text-sm">Monday - Sunday, 9AM - 9PM PST</p>
+                </div>
+              </div>
+              <p className="text-3xl font-bold text-purple-300 group-hover:text-purple-200 transition-colors">
+                (727) 633-1566
+              </p>
+            </a>
+
+            {/* Email Card */}
+            <a
+              href="mailto:moddonthemix@gmail.com"
+              className="bg-gradient-to-br from-pink-800/40 to-orange-800/40 border border-pink-500/30 rounded-2xl p-8 hover:scale-105 transition-transform cursor-pointer group"
+            >
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-orange-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-white mb-1">Email Us</h3>
+                  <p className="text-gray-400 text-sm">We'll respond within 24 hours</p>
+                </div>
+              </div>
+              <p className="text-xl font-bold text-pink-300 group-hover:text-pink-200 transition-colors break-all">
+                moddonthemix@gmail.com
+              </p>
+            </a>
+          </div>
+
+          {/* Location & Hours */}
+          <div className="bg-gradient-to-br from-gray-800/60 to-purple-900/40 border border-gray-700/50 rounded-2xl p-8 mb-8">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-2">📍 Location</h3>
+                <p className="text-gray-300 text-lg">Portland, Oregon</p>
+                <p className="text-gray-400 mt-1">Serving PDX artists and musicians nationwide</p>
+              </div>
+            </div>
+            <div className="border-t border-gray-700 pt-6 mt-6">
+              <p className="text-gray-400 text-sm mb-2">For recording sessions at our studios:</p>
+              <p className="text-gray-300">🏠 <strong>Home Studio</strong> - Professional home studio with chart-topping gear</p>
+              <p className="text-gray-300 mt-1">🎙️ <strong>Black Diamond Studios</strong> - 1424 SE 162nd Ave, Portland, OR</p>
+            </div>
+          </div>
+
+          {/* Social Links */}
+          <div className="bg-gradient-to-br from-indigo-800/40 to-purple-800/40 border border-indigo-500/30 rounded-2xl p-8 mb-8">
+            <h3 className="text-2xl font-bold text-white mb-4 text-center">Follow Us</h3>
+            <div className="flex justify-center gap-4">
+              <a
+                href="https://tiktok.com/@moddonthemix"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-14 h-14 bg-gradient-to-br from-pink-500 to-red-500 rounded-full flex items-center justify-center hover:scale-110 transition-transform"
+              >
+                <span className="text-white font-bold text-xl">TT</span>
+              </a>
+              <a
+                href="https://linktr.ee/moddonthemix"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center hover:scale-110 transition-transform"
+              >
+                <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M13.511 5.853l4.005-4.117c.366-.377.96-.377 1.327 0l1.443 1.483c.367.377.367.987 0 1.364L8.142 16.737c-.366.377-.959.377-1.326 0l-1.443-1.483c-.367-.377-.367-.987 0-1.364l8.138-8.037zm-7.144 2.44l4.005-4.117c.366-.377.96-.377 1.327 0l1.443 1.483c.367.377.367.987 0 1.364l-8.144 8.048c-.366.377-.959.377-1.326 0l-1.443-1.483c-.367-.377-.367-.987 0-1.364l4.138-3.931z"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          {/* Back Button */}
+          <div className="text-center">
+            <button
+              onClick={() => setView('home')}
+              className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-full font-bold text-lg transition-all"
+            >
+              ← Back to Home
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // HOMEPAGE VIEW
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 text-white">
@@ -1971,6 +2093,12 @@ export default function MusicSubmissionPlatform() {
             className="px-8 py-4 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 rounded-full font-bold text-lg transition-all"
           >
             Portfolio
+          </button>
+          <button
+            onClick={() => setView('contact')}
+            className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-full font-bold text-lg transition-all"
+          >
+            Contact
           </button>
         </div>
         
@@ -2214,6 +2342,74 @@ export default function MusicSubmissionPlatform() {
           </div>
         )}
       </div>
+
+      {/* Footer - Contact Info for SEO */}
+      <footer className="bg-black/40 border-t border-gray-800 mt-16">
+        <div className="max-w-7xl mx-auto px-8 py-12">
+          <div className="grid md:grid-cols-3 gap-8 mb-8">
+            {/* Contact Info */}
+            <div>
+              <h3 className="text-xl font-bold text-white mb-4">Contact Us</h3>
+              <div className="space-y-3">
+                <a href="tel:+17276331566" className="flex items-center gap-3 text-gray-300 hover:text-purple-400 transition-colors">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                  <span>(727) 633-1566</span>
+                </a>
+                <a href="mailto:moddonthemix@gmail.com" className="flex items-center gap-3 text-gray-300 hover:text-purple-400 transition-colors">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  <span>moddonthemix@gmail.com</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Location */}
+            <div>
+              <h3 className="text-xl font-bold text-white mb-4">Location</h3>
+              <div className="text-gray-300 space-y-2">
+                <p className="flex items-start gap-2">
+                  <svg className="w-5 h-5 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <span>Portland, Oregon</span>
+                </p>
+                <p className="text-sm text-gray-400">Serving PDX artists and musicians nationwide</p>
+              </div>
+            </div>
+
+            {/* Services */}
+            <div>
+              <h3 className="text-xl font-bold text-white mb-4">Services</h3>
+              <ul className="text-gray-300 space-y-2 text-sm">
+                <li>• Music Mixing & Mastering</li>
+                <li>• Recording Sessions</li>
+                <li>• Live Music Reviews</li>
+                <li>• Professional Consultation</li>
+                <li>• Pro Tools Templates</li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Bottom Bar */}
+          <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-gray-400 text-sm">
+              © {new Date().getFullYear()} moddonthemix - Portland Based Recording Studio & Mixing Studio
+            </p>
+            <div className="flex gap-4">
+              <a href="https://tiktok.com/@moddonthemix" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-purple-400 transition-colors">
+                <span className="text-sm font-bold">TikTok</span>
+              </a>
+              <a href="https://linktr.ee/moddonthemix" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-purple-400 transition-colors">
+                <span className="text-sm font-bold">Linktree</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
