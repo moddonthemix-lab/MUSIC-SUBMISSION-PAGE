@@ -73,8 +73,13 @@ export default function MusicSubmissionPlatform() {
 
   // Auto-switch to Black Diamond Studios if home studio is disabled and selected
   useEffect(() => {
-    if (!homeStudioEnabled && formData.recordingStudio === 'home') {
-      setFormData({...formData, recordingStudio: 'blackdiamond', recordingDuration: '1hour'});
+    if (!homeStudioEnabled) {
+      setFormData(prev => {
+        if (prev.recordingStudio === 'home') {
+          return {...prev, recordingStudio: 'blackdiamond', recordingDuration: '1hour'};
+        }
+        return prev;
+      });
     }
   }, [homeStudioEnabled]);
 
