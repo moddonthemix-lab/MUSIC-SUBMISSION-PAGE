@@ -22,6 +22,7 @@ export default function MusicSubmissionPlatform() {
   const [affiliateCodes, setAffiliateCodes] = useState([]);
   const [showAffiliateManager, setShowAffiliateManager] = useState(false);
   const [nowPlayingId, setNowPlayingId] = useState(null);
+  const [homeStudioEnabled, setHomeStudioEnabled] = useState(false);
   const [newCodeForm, setNewCodeForm] = useState({
     code: '',
     affiliate_name: '',
@@ -69,6 +70,13 @@ export default function MusicSubmissionPlatform() {
       settingsSubscription.unsubscribe();
     };
   }, []);
+
+  // Auto-switch to Black Diamond Studios if home studio is disabled and selected
+  useEffect(() => {
+    if (!homeStudioEnabled && formData.recordingStudio === 'home') {
+      setFormData({...formData, recordingStudio: 'blackdiamond', recordingDuration: '1hour'});
+    }
+  }, [homeStudioEnabled]);
 
   const loadSubmissions = async () => {
     try {
@@ -314,7 +322,7 @@ export default function MusicSubmissionPlatform() {
         }, 1000); // Small delay to ensure Cash App opens first
       }
 
-      setFormData({ email: '', artistName: '', trackTitle: '', socialHandle: '', priority: 'free', mixNotes: '', mixOption: 'standard', fileLink: '', subscriptionTier: null, recordingDuration: '1hour', recordingStudio: 'home' });
+      setFormData({ email: '', artistName: '', trackTitle: '', socialHandle: '', priority: 'free', mixNotes: '', mixOption: 'standard', fileLink: '', subscriptionTier: null, recordingDuration: '1hour', recordingStudio: homeStudioEnabled ? 'home' : 'blackdiamond' });
       setUploadedFile(null);
       setAffiliateCode('');
       setAppliedDiscount(null);
@@ -461,14 +469,15 @@ export default function MusicSubmissionPlatform() {
     try {
       const { data, error } = await supabase
         .from('settings')
-        .select('now_playing_id')
+        .select('now_playing_id, home_studio_enabled')
         .eq('id', 1)
         .single();
 
       if (error) throw error;
       setNowPlayingId(data?.now_playing_id || null);
+      setHomeStudioEnabled(data?.home_studio_enabled || false);
     } catch (error) {
-      console.error('Error loading now playing:', error);
+      console.error('Error loading settings:', error);
     }
   };
 
@@ -488,6 +497,23 @@ export default function MusicSubmissionPlatform() {
 
   const clearNowPlaying = async () => {
     await setNowPlaying(null);
+  };
+
+  const toggleHomeStudio = async () => {
+    try {
+      const newValue = !homeStudioEnabled;
+      const { error } = await supabase
+        .from('settings')
+        .update({ home_studio_enabled: newValue, updated_at: new Date().toISOString() })
+        .eq('id', 1);
+
+      if (error) throw error;
+      setHomeStudioEnabled(newValue);
+      alert(`Home Studio Recording ${newValue ? 'Enabled' : 'Disabled'}`);
+    } catch (error) {
+      console.error('Error toggling home studio:', error);
+      alert('Error updating setting. Please try again.');
+    }
   };
 
   const getNowPlayingSubmission = () => {
@@ -675,6 +701,12 @@ export default function MusicSubmissionPlatform() {
                 className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold"
               >
                 {showAffiliateManager ? 'Hide' : 'Manage'} Affiliate Codes
+              </button>
+              <button
+                onClick={toggleHomeStudio}
+                className={`px-4 py-2 rounded-lg font-semibold ${homeStudioEnabled ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}
+              >
+                Home Studio: {homeStudioEnabled ? 'ON' : 'OFF'}
               </button>
               <button
                 onClick={() => {
@@ -1288,7 +1320,18 @@ export default function MusicSubmissionPlatform() {
                       <div className="mb-6">
                         <h4 className="font-bold mb-3 text-yellow-300">Select Studio Location:</h4>
                         <div className="space-y-3">
-                          <div className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${formData.recordingStudio === 'home' ? 'border-yellow-500 bg-yellow-900/30' : 'border-gray-600 bg-black/20'}`} onClick={() => setFormData({...formData, recordingStudio: 'home', recordingDuration: '1hour'})}>
+                          <div className={`p-4 rounded-lg border-2 transition-all relative ${
+                            !homeStudioEnabled
+                              ? 'border-gray-700 bg-gray-800/20 opacity-60'
+                              : formData.recordingStudio === 'home'
+                                ? 'border-yellow-500 bg-yellow-900/30 cursor-pointer'
+                                : 'border-gray-600 bg-black/20 cursor-pointer'
+                          }`} onClick={() => homeStudioEnabled && setFormData({...formData, recordingStudio: 'home', recordingDuration: '1hour'})}>
+                            {!homeStudioEnabled && (
+                              <div className="absolute top-2 right-2 bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded">
+                                COMING SOON
+                              </div>
+                            )}
                             <div className="flex items-start gap-3">
                               <input
                                 type="radio"
@@ -1296,6 +1339,7 @@ export default function MusicSubmissionPlatform() {
                                 value="home"
                                 checked={formData.recordingStudio === 'home'}
                                 onChange={(e) => setFormData({...formData, recordingStudio: e.target.value, recordingDuration: '1hour'})}
+                                disabled={!homeStudioEnabled}
                                 className="w-5 h-5 mt-0.5"
                               />
                               <div className="flex-1">
