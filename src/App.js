@@ -1796,8 +1796,8 @@ export default function MusicSubmissionPlatform() {
                 )}
               </div>
 
-              {/* Discount Code Section - Only show for paid submissions */}
-              {(submissionType === 'mix' || submissionType === 'consultation' || submissionType === 'recording' || formData.priority !== 'free') && (
+              {/* Discount Code Section - Only show for paid submissions (not recording sessions) */}
+              {(submissionType === 'mix' || submissionType === 'consultation' || formData.priority !== 'free') && (
                 <div className="mb-4">
                   <label className="text-sm font-semibold block mb-2">Discount Code (optional)</label>
                   <div className="flex gap-2">
