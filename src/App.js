@@ -541,7 +541,7 @@ export default function MusicSubmissionPlatform() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          access_key: 'YOUR_ACCESS_KEY_HERE', // You'll need to get this from web3forms.com
+          access_key: '5683ed17-d063-44c2-9214-cf6f0bfe37b7',
           name: contactForm.name,
           email: contactForm.email,
           phone: contactForm.phone || 'Not provided',
