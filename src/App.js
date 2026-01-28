@@ -2356,10 +2356,10 @@ export default function MusicSubmissionPlatform() {
           Upgrade Your Sound
         </h1>
         <p className="text-xl text-gray-300 mb-4 max-w-2xl mx-auto">
-          Portland based recording studio and mixing studio by @moddonthemix. Professional mixing engineer offering mastering, recording sessions, and live music reviews with chart-topping gear. Get your tracks deeply reviewed by experienced engineers and get your song mixed on live stream!
+          Professional mixing engineer offering mastering, recording sessions, and live music reviews with chart-topping gear. Get your tracks deeply reviewed by experienced engineers and get your song mixed on live stream!
         </p>
         <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
-          📍 <strong className="text-white">Portland, Oregon Recording Studio</strong> | Serving PDX artists and musicians nationwide
+          Serving artists and musicians nationwide and worldwide
         </p>
         <div className="flex gap-4 justify-center flex-wrap">
           <button
