@@ -42,6 +42,14 @@ export default function MusicSubmissionPlatform() {
     recordingDuration: '1hour',
     recordingStudio: 'home'
   });
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    message: ''
+  });
+  const [isContactSubmitting, setIsContactSubmitting] = useState(false);
+  const [contactSubmitMessage, setContactSubmitMessage] = useState('');
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -518,6 +526,45 @@ export default function MusicSubmissionPlatform() {
     } catch (error) {
       console.error('Error toggling home studio:', error);
       alert('Error updating setting. Please try again.');
+    }
+  };
+
+  const handleContactSubmit = async (e) => {
+    e.preventDefault();
+    setIsContactSubmitting(true);
+    setContactSubmitMessage('');
+
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          access_key: 'YOUR_ACCESS_KEY_HERE', // You'll need to get this from web3forms.com
+          name: contactForm.name,
+          email: contactForm.email,
+          phone: contactForm.phone || 'Not provided',
+          message: contactForm.message,
+          subject: 'New Contact Form Submission from moddonthemix.com',
+          from_name: 'moddonthemix Website',
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setContactSubmitMessage('success');
+        setContactForm({ name: '', email: '', phone: '', message: '' });
+        setTimeout(() => setContactSubmitMessage(''), 5000);
+      } else {
+        setContactSubmitMessage('error');
+      }
+    } catch (error) {
+      console.error('Error submitting contact form:', error);
+      setContactSubmitMessage('error');
+    } finally {
+      setIsContactSubmitting(false);
     }
   };
 
@@ -2036,6 +2083,108 @@ export default function MusicSubmissionPlatform() {
                 </svg>
               </a>
             </div>
+          </div>
+
+          {/* Contact Form */}
+          <div className="bg-gradient-to-br from-purple-900/40 to-pink-900/40 border border-purple-500/30 rounded-2xl p-8 mb-8">
+            <h2 className="text-3xl font-bold text-white mb-6 text-center">Send a Message</h2>
+
+            {contactSubmitMessage === 'success' && (
+              <div className="mb-6 bg-green-900/30 border border-green-600/50 rounded-lg p-4 text-center">
+                <p className="text-green-300 font-bold">✓ Message sent successfully! We'll get back to you soon.</p>
+              </div>
+            )}
+
+            {contactSubmitMessage === 'error' && (
+              <div className="mb-6 bg-red-900/30 border border-red-600/50 rounded-lg p-4 text-center">
+                <p className="text-red-300 font-bold">✗ Error sending message. Please try emailing us directly.</p>
+              </div>
+            )}
+
+            <form onSubmit={handleContactSubmit} className="space-y-6">
+              {/* Name Field */}
+              <div>
+                <label className="block text-white font-semibold mb-2">
+                  Name <span className="text-pink-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={contactForm.name}
+                  onChange={(e) => setContactForm({...contactForm, name: e.target.value})}
+                  placeholder="Your Name"
+                  required
+                  className="w-full px-4 py-3 bg-gray-900/50 border border-purple-500/30 rounded-lg text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
+                />
+              </div>
+
+              {/* Email Field */}
+              <div>
+                <label className="block text-white font-semibold mb-2">
+                  Email <span className="text-pink-400">*</span>
+                </label>
+                <input
+                  type="email"
+                  value={contactForm.email}
+                  onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
+                  placeholder="your@email.com"
+                  required
+                  className="w-full px-4 py-3 bg-gray-900/50 border border-purple-500/30 rounded-lg text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
+                />
+              </div>
+
+              {/* Phone Field */}
+              <div>
+                <label className="block text-white font-semibold mb-2">
+                  Phone <span className="text-gray-400 text-sm font-normal">(Optional)</span>
+                </label>
+                <input
+                  type="tel"
+                  value={contactForm.phone}
+                  onChange={(e) => setContactForm({...contactForm, phone: e.target.value})}
+                  placeholder="(555) 555-5555"
+                  className="w-full px-4 py-3 bg-gray-900/50 border border-purple-500/30 rounded-lg text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
+                />
+              </div>
+
+              {/* Message Field */}
+              <div>
+                <label className="block text-white font-semibold mb-2">
+                  Message <span className="text-pink-400">*</span>
+                </label>
+                <textarea
+                  value={contactForm.message}
+                  onChange={(e) => setContactForm({...contactForm, message: e.target.value})}
+                  placeholder="Tell us about your project..."
+                  required
+                  rows="6"
+                  className="w-full px-4 py-3 bg-gray-900/50 border border-purple-500/30 rounded-lg text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all resize-none"
+                />
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={isContactSubmitting}
+                className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 rounded-lg font-bold text-lg transition-all flex items-center justify-center gap-2"
+              >
+                {isContactSubmitting ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                    </svg>
+                    Send Message
+                  </>
+                )}
+              </button>
+            </form>
           </div>
 
           {/* Back Button */}
