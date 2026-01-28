@@ -2208,6 +2208,134 @@ export default function MusicSubmissionPlatform() {
     );
   }
 
+  // SERVICES VIEW
+  if (view === 'services') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 text-white p-4 md:p-8">
+        <div className="max-w-6xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-8 md:mb-12">
+            <button
+              onClick={() => setView('home')}
+              className="text-purple-400 hover:text-purple-300 text-sm mb-4 inline-block"
+            >
+              ← Back to Home
+            </button>
+            <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+              Our Services
+            </h1>
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+              Professional audio services for artists, producers, and musicians
+            </p>
+          </div>
+
+          {/* Services Grid */}
+          <div className="grid md:grid-cols-2 gap-6 mb-8">
+            {/* Live Music Reviews */}
+            <div
+              onClick={() => {
+                setSubmissionType('review');
+                setView('submit');
+              }}
+              className="bg-gradient-to-br from-gray-800/60 to-purple-900/40 border border-gray-700/50 rounded-2xl p-8 hover:scale-105 transition-transform cursor-pointer group"
+            >
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-gray-500 to-gray-700 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                  </svg>
+                </div>
+                <h2 className="text-3xl font-bold text-white">Live Music Reviews</h2>
+              </div>
+              <p className="text-gray-300 mb-4">
+                Get your tracks reviewed live on TikTok! Deep analysis of your mix, production, and overall sound with actionable feedback.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <span className="px-3 py-1 bg-green-900/30 border border-green-700/50 rounded-full text-green-300 text-sm">Free Option Available</span>
+                <span className="px-3 py-1 bg-purple-900/30 border border-purple-700/50 rounded-full text-purple-300 text-sm">Priority Queue</span>
+              </div>
+            </div>
+
+            {/* Mix & Master */}
+            <div
+              onClick={() => {
+                setSubmissionType('mix');
+                setView('submit');
+              }}
+              className="bg-gradient-to-br from-green-900/40 to-emerald-900/40 border border-green-700/50 rounded-2xl p-8 hover:scale-105 transition-transform cursor-pointer group"
+            >
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                  </svg>
+                </div>
+                <h2 className="text-3xl font-bold text-white">Mix & Master</h2>
+              </div>
+              <p className="text-gray-300 mb-4">
+                Professional mixing and mastering services with chart-topping gear. One-time sessions or monthly subscription plans available.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <span className="px-3 py-1 bg-green-900/30 border border-green-700/50 rounded-full text-green-300 text-sm">Starting at $75</span>
+                <span className="px-3 py-1 bg-amber-900/30 border border-amber-700/50 rounded-full text-amber-300 text-sm">Monthly Plans</span>
+              </div>
+            </div>
+
+            {/* Consultation */}
+            <div
+              onClick={() => {
+                setSubmissionType('consultation');
+                setView('submit');
+              }}
+              className="bg-gradient-to-br from-orange-900/40 to-red-900/40 border border-orange-700/50 rounded-2xl p-8 hover:scale-105 transition-transform cursor-pointer group"
+            >
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                </div>
+                <h2 className="text-3xl font-bold text-white">Consultation</h2>
+              </div>
+              <p className="text-gray-300 mb-4">
+                30-minute one-on-one session to discuss your project, get expert advice, and create a game plan for your music career.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <span className="px-3 py-1 bg-orange-900/30 border border-orange-700/50 rounded-full text-orange-300 text-sm">$50 per session</span>
+                <span className="px-3 py-1 bg-red-900/30 border border-red-700/50 rounded-full text-red-300 text-sm">Book via Calendly</span>
+              </div>
+            </div>
+
+            {/* Recording Session */}
+            <div
+              onClick={() => {
+                setSubmissionType('recording');
+                setView('submit');
+              }}
+              className="bg-gradient-to-br from-yellow-900/40 to-orange-900/40 border border-yellow-700/50 rounded-2xl p-8 hover:scale-105 transition-transform cursor-pointer group"
+            >
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                  </svg>
+                </div>
+                <h2 className="text-3xl font-bold text-white">Recording Session</h2>
+              </div>
+              <p className="text-gray-300 mb-4">
+                Professional recording sessions at our Portland studios. Home studio or large format at Black Diamond Studios. Multiple hour packages available.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <span className="px-3 py-1 bg-yellow-900/30 border border-yellow-700/50 rounded-full text-yellow-300 text-sm">Portland Only</span>
+                <span className="px-3 py-1 bg-orange-900/30 border border-orange-700/50 rounded-full text-orange-300 text-sm">Book via Calendly</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // HOMEPAGE VIEW
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 text-white">
@@ -2224,37 +2352,10 @@ export default function MusicSubmissionPlatform() {
         </p>
         <div className="flex gap-4 justify-center flex-wrap">
           <button
-            onClick={() => setView('submit')}
-            className="px-8 py-4 bg-gray-800 hover:bg-gray-700 rounded-full font-bold text-lg transition-all"
+            onClick={() => setView('services')}
+            className="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-full font-bold text-lg transition-all shadow-lg"
           >
-            Get Music Reviews
-          </button>
-          <button
-            onClick={() => {
-              setSubmissionType('mix');
-              setView('submit');
-            }}
-            className="px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 rounded-full font-bold text-lg transition-all"
-          >
-            Mix & Master
-          </button>
-          <button
-            onClick={() => {
-              setSubmissionType('consultation');
-              setView('submit');
-            }}
-            className="px-8 py-4 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 rounded-full font-bold text-lg transition-all"
-          >
-            Consultation
-          </button>
-          <button
-            onClick={() => {
-              setSubmissionType('recording');
-              setView('submit');
-            }}
-            className="px-8 py-4 bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 rounded-full font-bold text-lg transition-all"
-          >
-            Recording Session
+            Services
           </button>
           <button
             onClick={() => window.open('https://linktr.ee/moddonthemix', '_blank')}
